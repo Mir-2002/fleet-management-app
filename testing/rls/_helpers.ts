@@ -1,5 +1,5 @@
 // Shared harness for RLS and DB-backed integration tests. Talks to a LOCAL
-// Supabase stack only (`supabase start`, see testing/00-INFRASTRUCTURE.md) —
+// Supabase stack only (`supabase start`, see misc/agent-docs/testing/00-INFRASTRUCTURE.md) —
 // deliberately does NOT fall back to apps/web/.env.local, since that file may
 // point at the live hosted project. Missing env vars fail loudly instead of
 // silently defaulting to something that could touch production data.

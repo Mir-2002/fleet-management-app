@@ -5,7 +5,7 @@ import { defineConfig, devices } from "@playwright/test";
 // should hold local URL/keys before running this against the local DB -- do
 // NOT run E2E tests with .env.local pointed at the live project).
 // As of 2026-08-28, apps/web/.env.local is configured to always point at the
-// local stack for development (see testing/README.md's "Decisions made" table);
+// local stack for development (see misc/agent-docs/testing/README.md's "Decisions made" table);
 // the original live-project credentials are backed up at apps/web/.env.local.live.
 // Requires `npm run db:test:reset` first so the fixture users/trucks exist.
 

@@ -1,8 +1,8 @@
 # Wave 0 — Test Infrastructure (blocking prerequisite)
 
-**Branch:** landed on `test/wave-1-tests` in practice (see testing/README.md).
+**Branch:** landed on `test/wave-1-tests` in practice (see README.md).
 
-**Status (2026-08-28):** Mostly done -- config.toml, both migrations, vitest config, npm scripts, and seed.test.mjs all exist. `database.types.ts` (task 2 below) was **not** generated -- see the note under that task. Nothing here has been run end-to-end (`supabase db reset` / `supabase start`) from the authoring environment; see testing/README.md's "Implementation status" section for exactly why and what that means for trusting the rest of the suite.
+**Status (2026-08-28):** Mostly done -- config.toml, both migrations, vitest config, npm scripts, and seed.test.mjs all exist. `database.types.ts` (task 2 below) was **not** generated -- see the note under that task. Nothing here has been run end-to-end (`supabase db reset` / `supabase start`) from the authoring environment; see README.md's "Implementation status" section for exactly why and what that means for trusting the rest of the suite.
 
 ## Why this has to come first
 

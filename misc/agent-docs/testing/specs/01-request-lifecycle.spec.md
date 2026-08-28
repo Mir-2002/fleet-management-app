@@ -53,7 +53,7 @@ Confirmed 2026-08-28: not built yet, tracked separately as a future `feature/`/`
 | U-REQ-08 | `UpdateRequestSchema` mirrors the same dimension/stop/time rules | as above |
 
 ### Integration (server actions against local Supabase)
-> **Status (2026-08-28): cut.** This Integration tier was implemented (see `testing/README.md`'s "Cut: dedicated integration-test layer" section) then removed as a deliberate scope call -- the DB/Docker setup cost wasn't worth it for a base app. The test cases below are kept as a record of intended coverage, not as work still to do. Some of this logic may come back as pure unit tests if it gets extracted into `packages/shared`.
+> **Status (2026-08-28): cut.** This Integration tier was implemented (see `../README.md`'s "Cut: dedicated integration-test layer" section) then removed as a deliberate scope call -- the DB/Docker setup cost wasn't worth it for a base app. The test cases below are kept as a record of intended coverage, not as work still to do. Some of this logic may come back as pure unit tests if it gets extracted into `packages/shared`.
 
 
 | ID | Description | Expected |

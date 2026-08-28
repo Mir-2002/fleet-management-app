@@ -9,6 +9,10 @@ one-branch-per-spec split originally suggested below; splitting it up after the 
 than it'd help at this point. Treat the "suggested branch sequence" section as historical intent, not
 what actually happened.
 **Decisions confirmed with Ahmer:** 2026-08-28.
+**Moved 2026-08-28:** this whole folder (`README.md`, `00-INFRASTRUCTURE.md`, `specs/`) used to live at
+`testing/`, alongside the actual test code. Relocated to `misc/agent-docs/testing/` to keep planning/
+reference docs out of directories the app's own tooling reads from (vitest/Playwright configs point at
+`testing/unit/`, `testing/rls/`, `testing/e2e/`, etc. -- those didn't move, only these docs did).
 
 ## Why this exists
 
