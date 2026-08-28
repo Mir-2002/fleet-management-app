@@ -374,7 +374,7 @@ export function InvoiceDetailDialog({ row, open, onOpenChange }: InvoiceDetailDi
                 onClick={handleSend}
                 disabled={actionLoading === "send"}
               >
-                {actionLoading === "send" ? "Sending..." : "Send Invoice"}
+                {actionLoading === "send" ? "Forwarding..." : "Forward to Client Portal"}
               </Button>
             )}
             {(row.status === "SENT" || row.status === "OVERDUE") && !showPaymentForm && (
