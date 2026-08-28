@@ -7,19 +7,21 @@ import { createClient } from '@supabase/supabase-js'
 import { FIXTURE_USERS, FIXTURE_TRUCKS } from '../testing/fixtures.mjs'
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'http://127.0.0.1:54321'
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+// Modern Supabase naming is "secret key" (was "service_role key"); fall back to the legacy
+// env var name so this keeps working either way `supabase status` labels it.
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
 
-if (!SUPABASE_SERVICE_ROLE_KEY) {
+if (!SUPABASE_SECRET_KEY) {
   console.error(
-    'SUPABASE_SERVICE_ROLE_KEY is not set. Run `supabase status` after ' +
-    '`supabase start` and export the printed service_role key, e.g.\n' +
-    '  export SUPABASE_SERVICE_ROLE_KEY=<service_role key from supabase status>\n' +
+    'SUPABASE_SECRET_KEY is not set. Run `supabase status` after ' +
+    '`supabase start` and export the printed secret/service_role key, e.g.\n' +
+    '  export SUPABASE_SECRET_KEY=<secret key from supabase status>\n' +
     '(SUPABASE_URL defaults to http://127.0.0.1:54321, the standard local API URL.)'
   )
   process.exit(1)
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+const supabase = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 })
 

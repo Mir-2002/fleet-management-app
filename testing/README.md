@@ -57,9 +57,18 @@ ever use the keys printed by `supabase status` for the *local* stack below.
 2. Install Docker Desktop if you don't have it (required for `supabase start`). On Windows: Docker
    Desktop with the WSL2 backend.
 3. `npx supabase start` (first run pulls images, can take several minutes), then `npx supabase status`
-   to get the local API URL, anon key, and service_role key.
-4. Export `SUPABASE_URL` (`http://127.0.0.1:54321`), `SUPABASE_ANON_KEY`, and
-   `SUPABASE_SERVICE_ROLE_KEY` from step 3 in the terminal you'll run tests from.
+   to get the local API URL, publishable key, and secret key (older CLI versions label these anon key
+   and service_role key -- same thing, just renamed).
+4. Export `SUPABASE_URL` (`http://127.0.0.1:54321`), `SUPABASE_PUBLISHABLE_KEY`, and
+   `SUPABASE_SECRET_KEY` from step 3 in the terminal you'll run tests from (`testing/rls/_helpers.ts`
+   and `supabase/seed.test.mjs` also accept the legacy `SUPABASE_ANON_KEY`/`SUPABASE_SERVICE_ROLE_KEY`
+   names as a fallback, but the publishable/secret names are preferred). These are local-stack-only
+   credentials -- ignore the storage access key / storage secret key some CLI versions also print,
+   those are unrelated S3-protocol credentials for the Storage bucket.
+   Optional: instead of re-exporting these every session, put them in a gitignored
+   `.env.test.local` at the repo root (the `.env.*.local` pattern is already in `.gitignore`) and
+   source it before running tests -- just keep it separate from `apps/web/.env.local`, which holds
+   the live project's credentials, not the local stack's.
 5. `npm run db:test:reset` -- applies every migration and seeds the fixture users/trucks from
    `testing/fixtures.mjs`.
 6. `npm run test:integration` (covers `testing/integration/**` and `testing/rls/**` -- one vitest
@@ -98,7 +107,30 @@ Each of these should get its own `bugfix/` branch once its red test lands.
 - CI (GitHub Actions) wiring is deferred — flagged in `00-INFRASTRUCTURE.md` as a follow-up, not required for wave 1 to land.
 
 
-## Implementation status (2026-08-28 update)
+## Cut: dedicated integration-test layer (2026-08-28)
+
+Per Ahmer's call: the DB-backed `testing/integration/**` tests (request lifecycle, trip dispatch,
+finance) added real setup complexity -- Docker, a local Supabase stack, seeded fixtures, env vars --
+for what's still a base app. Removed `request-lifecycle.test.ts`, `trip-dispatch.test.ts`, and
+`finance.test.ts`. The two tests that were filed under "integration" but never actually needed a
+database (`auth-middleware.test.ts`, `auth-actions.test.ts` -- both fully mocked) moved to
+`testing/unit/` instead, since they don't have the complexity problem being solved for.
+
+`vitest.integration.config.ts` now only covers `testing/rls/**` -- RLS tests weren't part of this
+decision (Ahmer didn't ask to cut those, and a plain-text question about them is still open, see
+below), but they share the exact same Docker/local-stack dependency, so worth a deliberate call
+rather than assuming either way. The E2E suite (`testing/e2e/**`) needs that same local stack
+regardless of how the RLS question resolves -- cutting DB-tier unit-of-work tests doesn't remove the
+Docker requirement, since Playwright has to run against something.
+
+**Coverage given up by cutting the integration layer** (not automatically recovered by unit + E2E):
+double-booking prevention on trip assignment, the invoice-totals and payroll-net-pay DB triggers
+doing their math correctly, and the unique constraints (one payroll record per employee per period,
+etc.) actually rejecting duplicates. Some of this could still be covered as pure unit tests if more
+of that logic gets extracted into `packages/shared` the way `canTransitionTripStatus()` and
+`calculateNetPay()` already were -- worth doing opportunistically, not a blocker.
+
+## Implementation status (2026-08-28 update, reconciled after the integration-test cut)
 
 **What Codex built (uncommitted work found already in the working tree when Claude picked this up):**
 - Wave 0 infra: `supabase/config.toml`, `vitest.unit.config.ts`, `vitest.integration.config.ts`,
@@ -109,8 +141,9 @@ Each of these should get its own `bugfix/` branch once its red test lands.
   `trip.schema.ts`, `calculateNetPay()` into `payroll.schema.ts`, `CreateInvoiceFormSchema` hoisted
   from `invoices/actions.ts` into `invoice.schema.ts`.
 - Unit tests: `testing/unit/request.schema.test.ts`, `trip-status.test.ts`, `finance.schema.test.ts`.
-- Integration tests: `testing/integration/auth-middleware.test.ts`, `auth-actions.test.ts` (spec 03,
-  fully mocked — no DB needed).
+- Two auth tests originally filed under `testing/integration/` (`auth-middleware.test.ts`,
+  `auth-actions.test.ts`, spec 03) — fully mocked, never needed a DB. Since moved to `testing/unit/`
+  (see "Cut" section above).
 - Did **not** implement the two intended-behavior bugfixes (invoice SENT-lock, trip reassignment
   lock) — only the refactors above, no red/`it.fails` tests for them yet.
 
@@ -126,10 +159,15 @@ Each of these should get its own `bugfix/` branch once its red test lands.
   referenced by the `db:test:reset` script but didn't exist).
 - Added `testing/rls/_helpers.ts` (role-authenticated client harness, deliberately never falls back to
   `apps/web/.env.local` since that may point at the live project).
-- Integration tests: `testing/integration/request-lifecycle.test.ts` (spec 01),
-  `trip-dispatch.test.ts` (spec 02, includes the `it.fails` red test for the reassignment-lock gap),
-  `finance.test.ts` (spec 04, includes the `it.fails` red test for the SENT-lock gap).
-- RLS tests: `testing/rls/request-rls.test.ts`, `trip-rls.test.ts`, `finance-rls.test.ts`.
+- Moved `auth-middleware.test.ts` and `auth-actions.test.ts` into `testing/unit/`; added the `@` path
+  alias to `vitest.unit.config.ts` so their `@/lib/supabase/server` mock resolves.
+- Authored, then deleted per the 2026-08-28 cut (see above): `testing/integration/request-lifecycle.test.ts`
+  (spec 01), `trip-dispatch.test.ts` (spec 02, included the `it.fails` red test for the
+  reassignment-lock gap), `finance.test.ts` (spec 04, included the `it.fails` red test for the
+  SENT-lock gap). Their coverage is **not** currently replaced — see the "Cut" section above for what
+  was given up and how some of it could come back as pure unit tests later.
+- RLS tests (kept, not part of the cut): `testing/rls/request-rls.test.ts`, `trip-rls.test.ts`,
+  `finance-rls.test.ts`.
 - Spec 05 (policy matrix): `supabase/migrations/20260828000000_test_policy_introspection.sql` (adds a
   service-role-only `list_rls_policies()` RPC), `testing/rls/policy-snapshot.json` (hand-derived
   expected policies), `testing/rls/policy-matrix.test.ts`.
@@ -139,19 +177,26 @@ Each of these should get its own `bugfix/` branch once its red test lands.
   whose underlying library was never confirmed — see that file's header comment).
 
 **What could NOT be executed or verified from the authoring environment, and why:**
-- No Docker available, so `supabase start` (the local Postgres/Auth stack every integration/RLS/E2E
-  test depends on) cannot run there.
+- No Docker available in the authoring/bridge environment, so `supabase start` (the local Postgres/Auth
+  stack every RLS/E2E test depends on) cannot run there.
 - The `supabase` CLI itself fails on that environment (`No matching Supabase CLI binary package found
-  for linux-x64`), so not even `supabase status` works.
+  for linux-x64`), so not even `supabase status` works from there.
 - No outbound network access to the live Supabase project from that shell, so the enum-swap fix above
   couldn't be cross-checked against the real hosted schema either.
-- **Only the unit tests (`npm run test:unit`) were actually run and confirmed passing.** Everything in
-  `testing/integration/`, `testing/rls/`, and `testing/e2e/` is authored against the spec and the real
-  code paths, but genuinely unverified — run `npm run db:test:reset` then `npm run test:integration`
-  and `npm run test:e2e` yourself (or in CI) before trusting them, and expect to fix a few things on
-  first run (typos, a selector, a fixture ordering issue) the way you would with any new test suite.
+- A structural platform mismatch also blocks re-running `npm run test:unit` from the bridge after the
+  file moves: the user's own `npm install` runs on their real Windows machine and installs
+  Windows-native optional deps (e.g. `@rollup/rollup-win32-x64-msvc`), while the bridge is a separate
+  Linux VM that needs Linux-native ones (`@rollup/rollup-linux-x64-gnu`) — these get pruned every time
+  Windows `npm install` runs. **Only an earlier run of `npm run test:unit` (before the auth-test move)
+  was actually confirmed passing from this side.** Run `npm run test:unit` yourself to confirm it still
+  passes including the two newly-relocated auth tests, then `npm run db:test:reset` and
+  `npm run test:e2e` (RLS tests run via `test:integration`, see the "Cut" section for what that now
+  covers) before trusting any of it.
 
-**Two `it.fails` red tests are in the suite by design** (`I-TRIP-10` in `trip-dispatch.test.ts`,
-`I-FIN-07` in `finance.test.ts`) — they document known gaps and will start failing loudly (Vitest
-flags an unexpected pass) the moment someone fixes the underlying bug, which is the signal to flip
-them to a plain `it`.
+**Two `it.fails` red tests were part of the now-deleted integration suite by design**
+(`I-TRIP-10` in `trip-dispatch.test.ts`, `I-FIN-07` in `finance.test.ts`) — they documented known gaps
+(trip reassignment isn't locked once `IN_PROGRESS+`; invoices don't lock once sent) and would have
+started failing loudly the moment someone fixed the underlying bug. With the integration layer cut,
+those two bugs are undocumented in test form again — tracked only in "Known bugs" above. Worth
+re-adding as unit-level `it.fails` tests once/if the relevant logic gets extracted into
+`packages/shared` the way `canTransitionTripStatus()` was.

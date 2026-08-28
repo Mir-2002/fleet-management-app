@@ -10,7 +10,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["testing/integration/**/*.test.ts", "testing/rls/**/*.test.ts"],
+    include: ["testing/rls/**/*.test.ts"], // testing/integration/** was cut 2026-08-28 (see testing/README.md) -- the two DB-free auth tests moved to testing/unit/
     fileParallelism: false,
     sequence: { concurrent: false },
     testTimeout: 20_000,

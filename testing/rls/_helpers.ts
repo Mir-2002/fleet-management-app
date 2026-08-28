@@ -13,23 +13,26 @@ import { FIXTURE_USERS } from "../fixtures.mjs";
 type FixtureUserKey = keyof typeof FIXTURE_USERS;
 
 const SUPABASE_URL = process.env.SUPABASE_URL ?? "http://127.0.0.1:54321";
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Supabase's modern CLI/dashboard naming is "publishable" (client-safe) / "secret" (admin) key,
+// replacing the older "anon" / "service_role" labels for the same two keys. We read the modern
+// names first and fall back to the legacy ones so either `supabase status` output style works.
+const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_ANON_KEY;
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 function requireEnv(name: string, value: string | undefined): string {
   if (!value) {
     throw new Error(
       `${name} is not set. Run \`supabase start\` then \`supabase status\` and export ` +
-        `the printed keys (SUPABASE_ANON_KEY=<anon key>, SUPABASE_SERVICE_ROLE_KEY=<service_role key>) ` +
+        `the printed keys (SUPABASE_PUBLISHABLE_KEY=<publishable/anon key>, SUPABASE_SECRET_KEY=<secret/service_role key>) ` +
         `before running integration/RLS tests. SUPABASE_URL defaults to http://127.0.0.1:54321.`
     );
   }
   return value;
 }
 
-/** Service-role client — bypasses RLS. Use only for test setup/teardown, never for assertions. */
+/** Secret-key client — bypasses RLS. Use only for test setup/teardown, never for assertions. */
 export function adminClient(): SupabaseClient {
-  return createClient(SUPABASE_URL, requireEnv("SUPABASE_SERVICE_ROLE_KEY", SUPABASE_SERVICE_ROLE_KEY), {
+  return createClient(SUPABASE_URL, requireEnv("SUPABASE_SECRET_KEY", SUPABASE_SECRET_KEY), {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 }
@@ -47,7 +50,7 @@ export async function clientFor(userKey: FixtureUserKey): Promise<SupabaseClient
   if (cached) return cached;
 
   const user = FIXTURE_USERS[userKey];
-  const client = createClient(SUPABASE_URL, requireEnv("SUPABASE_ANON_KEY", SUPABASE_ANON_KEY), {
+  const client = createClient(SUPABASE_URL, requireEnv("SUPABASE_PUBLISHABLE_KEY", SUPABASE_PUBLISHABLE_KEY), {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
@@ -65,7 +68,7 @@ export async function clientFor(userKey: FixtureUserKey): Promise<SupabaseClient
 
 /** An unauthenticated client, for asserting anonymous access is denied. */
 export function anonClient(): SupabaseClient {
-  return createClient(SUPABASE_URL, requireEnv("SUPABASE_ANON_KEY", SUPABASE_ANON_KEY), {
+  return createClient(SUPABASE_URL, requireEnv("SUPABASE_PUBLISHABLE_KEY", SUPABASE_PUBLISHABLE_KEY), {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 }
