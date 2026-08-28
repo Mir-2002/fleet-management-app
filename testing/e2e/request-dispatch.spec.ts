@@ -11,13 +11,21 @@
 //    confirmed (shadcn's Form wiring usually gives the FormLabel text as the
 //    accessible name -- verify against the running app before relying on it).
 //
-// The drag-and-drop interaction to move a card between Kanban columns was
-// NOT verified against the actual DnD implementation (library unconfirmed)
-// -- that step is marked TODO below rather than guessed at. Author who
-// finishes this: check KanbanBoard.tsx's onDragEnd/drop handler and replace
-// the TODO with a real drag (Playwright's `locator.dragTo()` if it's
-// HTML5-native DnD, or manual mouse down/move/up if it's a JS DnD library
-// like @dnd-kit/react-dnd).
+// Corrected 2026-08-28, verified against source:
+//  - There is NO drag-and-drop in KanbanBoard.tsx -- no onDragEnd/drop handler,
+//    no DnD library. Status changes happen via a per-card dropdown menu (the
+//    small colored badge button in KanbanCard.tsx, e.g. "To Do v"), listing
+//    all four columns as selectable targets. The "drag the card" TODO below
+//    was based on an unverified assumption; left unimplemented here (not
+//    required for this test's current assertions) but the real mechanism is
+//    now documented for whoever adds that step.
+//  - page.locator("text=To Do").locator("..") only reaches the column's
+//    HEADER div (label + count badge, no cards) -- it needed one more ".."
+//    to reach the column container that also holds the card list. Also,
+//    KanbanCard's outer div (not its inner status button, which calls
+//    stopPropagation and opens the status dropdown instead) is what opens
+//    TripDetailDialog -- clicking the card's client-name text is a reliable
+//    way to hit that outer handler without landing on the status button.
 //
 // NOT executed by the agent that wrote this file.
 
@@ -90,8 +98,15 @@ test("E2E-02 dispatcher assigns resources and dispatches a trip", async ({ page 
   // Open the first card in the "To Do" column -- assumes at least one
   // ASSIGNED trip exists (e.g. from E2E-01, or seed data). A real run should
   // create its own fixture trip rather than depend on test execution order.
-  const todoColumn = page.locator("text=To Do").locator("..");
-  await todoColumn.getByRole("button").first().click(); // opens TripDetailDialog
+  // ".." twice: once from the label span to the header row, once more to the
+  // column container that also holds the card list (see file header note).
+  const todoColumn = page.locator("text=To Do").locator("../..");
+  // Click the card's client-name paragraph rather than "the first button" --
+  // the only button in a card is the status-dropdown trigger, which stops
+  // propagation and would open the wrong UI. The client-name <p> has no
+  // click handler of its own, so the click bubbles up to the card's outer
+  // div and opens TripDetailDialog instead.
+  await todoColumn.locator("p").first().click();
 
   // TODO verify these accessible names against the running app -- see file
   // header. Falling back to combobox position if getByLabel doesn't match.

@@ -32,7 +32,13 @@ test("E-AUTH-02 client logs in and lands on the portal requests list", async ({ 
   await expect(page).toHaveURL(/\/portal\/requests/);
 });
 
-test("E-AUTH-03 client visiting the dashboard directly is bounced to portal login", async ({ page }) => {
+// Corrected 2026-08-28: this originally asserted a bounce to
+// /portal/login?error=unauthorized, but that contradicts this same spec's own
+// confirmed rule and I-AUTH-06 ("All other routes ... non-DISPATCHER is signed
+// out and redirected to /login?error=unauthorized") -- middleware.ts's catch-all
+// branch redirects ANY non-DISPATCHER role to /login, not to their own portal.
+// The test's expectation was wrong, not the app.
+test("E-AUTH-03 client visiting the dashboard directly is bounced to dispatcher login", async ({ page }) => {
   await page.goto("/portal/login");
   await page.getByLabel("Email").fill(CLIENT.email);
   await page.getByLabel("Password").fill(CLIENT.password);
@@ -40,5 +46,5 @@ test("E-AUTH-03 client visiting the dashboard directly is bounced to portal logi
   await expect(page).toHaveURL(/\/portal\/requests/);
 
   await page.goto("/dashboard");
-  await expect(page).toHaveURL(/\/portal\/login\?error=unauthorized/);
+  await expect(page).toHaveURL(/\/login\?error=unauthorized/);
 });
