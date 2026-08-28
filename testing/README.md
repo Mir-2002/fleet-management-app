@@ -46,6 +46,32 @@ Each spec is meant to become its own `test/` branch (named in the spec's header)
 | Request edit ownership | CLIENT: own `PENDING` requests only. DISPATCHER: any `PENDING` request. | Confirmed 2026-08-28 — determines the RLS assertions in spec 01. |
 | DELIVERED → request status | Intentionally no effect | Confirmed 2026-08-28 — `DELIVERED` is a trip-side checkpoint only; only `IN_PROGRESS` (→ `DISPATCHED`) and `COMPLETED` (→ `COMPLETED`) touch the parent request. |
 
+## Running the tests locally
+
+**Safety first: never point these at your live project.** `apps/web/.env.local` and `supabase/.env`
+hold real credentials for the hosted project -- these tests do real inserts/deletes and must only
+ever use the keys printed by `supabase status` for the *local* stack below.
+
+1. `npm install` in the repo root (a normal terminal on your machine -- not through any sandboxed
+   bridge; that environment lacked Docker and was too slow to finish a full install).
+2. Install Docker Desktop if you don't have it (required for `supabase start`). On Windows: Docker
+   Desktop with the WSL2 backend.
+3. `npx supabase start` (first run pulls images, can take several minutes), then `npx supabase status`
+   to get the local API URL, anon key, and service_role key.
+4. Export `SUPABASE_URL` (`http://127.0.0.1:54321`), `SUPABASE_ANON_KEY`, and
+   `SUPABASE_SERVICE_ROLE_KEY` from step 3 in the terminal you'll run tests from.
+5. `npm run db:test:reset` -- applies every migration and seeds the fixture users/trucks from
+   `testing/fixtures.mjs`.
+6. `npm run test:integration` (covers `testing/integration/**` and `testing/rls/**` -- one vitest
+   config) and `npm run test:unit`.
+7. For E2E: temporarily point `apps/web/.env.local`'s `NEXT_PUBLIC_SUPABASE_URL` /
+   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` at the local stack (back up the real values first --
+   Next.js only reads `.env.local`, and Playwright launches `next dev` from it), then
+   `npm run test:e2e:install` once, then `npm run test:e2e`. Restore your real `.env.local` after.
+
+This has never actually been run end to end -- see "Implementation status" below for why. Expect to
+fix a small thing or two on first run.
+
 ## Suggested branch sequence
 
 0. `test/schema-baseline-and-tooling` — **blocking.** See `00-INFRASTRUCTURE.md`. Nothing else can run for real without this.
