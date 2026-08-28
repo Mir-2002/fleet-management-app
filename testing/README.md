@@ -45,6 +45,7 @@ Each spec is meant to become its own `test/` branch (named in the spec's header)
 | Bug-handling philosophy | Test *intended* behavior where a design intent is clearly documented in code comments but unenforced | Two cases qualify this wave: invoices should lock once `status != DRAFT` (migration comment says so, nothing enforces it); trip resource reassignment should lock once `IN_PROGRESS+` (confirmed 2026-08-28). These tests will fail today by design — that failure is the spec for a follow-up `bugfix/` branch. |
 | Request edit ownership | CLIENT: own `PENDING` requests only. DISPATCHER: any `PENDING` request. | Confirmed 2026-08-28 — determines the RLS assertions in spec 01. |
 | DELIVERED → request status | Intentionally no effect | Confirmed 2026-08-28 — `DELIVERED` is a trip-side checkpoint only; only `IN_PROGRESS` (→ `DISPATCHED`) and `COMPLETED` (→ `COMPLETED`) touch the parent request. |
+| `npm run dev` target | Local Supabase stack, not the hosted project | Confirmed 2026-08-28 — `apps/web/.env.local` now holds local-stack URL/keys so dev and Playwright E2E exercise the same DB the fixture users/trucks are seeded into. Original live-project credentials are backed up at `apps/web/.env.local.live` (gitignored) — swap the two files if you need to point dev at the hosted project again. `supabase/.env` (used by `supabase/seed.mjs`, the hosted-project seed script) is untouched and still points at the live project on purpose. |
 
 ## Running the tests locally
 

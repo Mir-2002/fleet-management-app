@@ -8,6 +8,7 @@ apps/web/out/
 # Environment
 .env.local
 .env.*.local
+.env.local.live
 
 # OS
 .DS_Store
