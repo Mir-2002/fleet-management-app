@@ -16,6 +16,15 @@ export const PayrollRoleSchema = z.enum([
   "HELPER",
 ]);
 
+export function calculateNetPay(input: {
+  basePay: number;
+  tripBonus: number;
+  overtimePay: number;
+  deductions: number;
+}) {
+  return input.basePay + input.tripBonus + input.overtimePay - input.deductions;
+}
+
 // PaymentMethodSchema is defined in invoice.schema and re-exported from the
 // shared index. Import it from there; it is not re-exported here to avoid
 // duplicate-export errors in the barrel.

@@ -67,6 +67,21 @@ export const CreateInvoiceSchema = z.object({
   { message: "Due date must be on or after issue date", path: ["dueDate"] }
 );
 
+export const CreateInvoiceFormSchema = z.object({
+  clientId: z.string().uuid(),
+  requestId: z.string().uuid().optional().or(z.literal("")),
+  tripId: z.string().uuid().optional().or(z.literal("")),
+  issueDate: z.string().date(),
+  dueDate: z.string().date(),
+  discountAmount: z.number().min(0).default(0),
+  taxAmount: z.number().min(0).default(0),
+  notes: z.string().optional(),
+  lineItems: z.array(CreateInvoiceLineItemSchema).min(1, "At least one line item is required"),
+}).refine(
+  (data) => data.dueDate >= data.issueDate,
+  { message: "Due date must be on or after issue date", path: ["dueDate"] }
+);
+
 export const InvoiceSchema = z.object({
   id: z.string().uuid(),
   invoiceNumber: z.string(),
@@ -112,6 +127,7 @@ export type InvoiceStatus = z.infer<typeof InvoiceStatusSchema>;
 export type PaymentMethod = z.infer<typeof PaymentMethodSchema>;
 
 export type CreateInvoiceInput = z.infer<typeof CreateInvoiceSchema>;
+export type CreateInvoiceFormInput = z.infer<typeof CreateInvoiceFormSchema>;
 export type UpdateInvoiceInput = z.infer<typeof UpdateInvoiceSchema>;
 export type InvoiceOutput = z.infer<typeof InvoiceSchema>;
 

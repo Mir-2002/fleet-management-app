@@ -1,15 +1,8 @@
 'use server'
 
 import { revalidatePath } from "next/cache"
-import { TripStatus } from "@fleetman/shared"
+import { canTransitionTripStatus, TripStatus } from "@fleetman/shared"
 import { createClient } from "@/lib/supabase/server"
-
-const STATUS_ORDER: Partial<Record<TripStatus, number>> = {
-  ASSIGNED: 0,
-  IN_PROGRESS: 1,
-  DELIVERED: 2,
-  COMPLETED: 3,
-}
 
 export async function updateTripStatusAction(tripId: string, status: TripStatus) {
   const supabase = await createClient()
@@ -20,7 +13,7 @@ export async function updateTripStatusAction(tripId: string, status: TripStatus)
     .eq('id', tripId)
     .single()
 
-  if ((STATUS_ORDER[status] ?? -1) < (STATUS_ORDER[trip?.status as TripStatus] ?? -1)) {
+  if (!trip || !canTransitionTripStatus(trip.status as TripStatus, status)) {
     return { success: false as const, error: 'Cannot move a trip backwards.' }
   }
 

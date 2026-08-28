@@ -154,8 +154,13 @@ export function PortalNewRequestForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Weight</FormLabel>
-                  <FormControl>
-                    <div className="relative">
+                  {/* The unit-suffix wrapper must sit OUTSIDE FormControl: FormControl uses a
+                      Radix Slot that forwards the label-linked id to its single direct child,
+                      so if the div were the direct child, the id would land on the div instead
+                      of the Input, breaking the FormLabel's htmlFor association (and with it,
+                      getByLabel-based lookups and screen readers alike). */}
+                  <div className="relative">
+                    <FormControl>
                       <Input
                         type="number"
                         min="0"
@@ -166,9 +171,9 @@ export function PortalNewRequestForm() {
                         onChange={(e) => field.onChange(e.target.value === '' ? undefined : e.target.valueAsNumber)}
                         className="pr-9"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">kg</span>
-                    </div>
-                  </FormControl>
+                    </FormControl>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">kg</span>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -216,8 +221,10 @@ export function PortalNewRequestForm() {
                   name={name}
                   render={({ field }) => (
                     <FormItem>
-                      <FormControl>
-                        <div className="relative">
+                      {/* Same Slot-forwarding fix as the Weight field above -- keep the
+                          positioning wrapper outside FormControl. */}
+                      <div className="relative">
+                        <FormControl>
                           <Input
                             type="number"
                             min="0"
@@ -228,9 +235,9 @@ export function PortalNewRequestForm() {
                             onChange={(e) => field.onChange(e.target.value === '' ? undefined : e.target.valueAsNumber)}
                             className="pr-9"
                           />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">cm</span>
-                        </div>
-                      </FormControl>
+                        </FormControl>
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">cm</span>
+                      </div>
                       {name === 'cargoLength' && <FormMessage />}
                     </FormItem>
                   )}
