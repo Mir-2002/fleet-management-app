@@ -1,30 +1,8 @@
 'use server'
 
 import { revalidatePath } from "next/cache"
-import { z } from "zod"
+import { CreateInvoiceFormInput, CreateInvoiceFormSchema } from "@fleetman/shared"
 import { createClient } from "@/lib/supabase/server"
-
-const CreateInvoiceFormSchema = z.object({
-  clientId: z.string().uuid(),
-  requestId: z.string().uuid().optional().or(z.literal("")),
-  tripId: z.string().uuid().optional().or(z.literal("")),
-  issueDate: z.string().min(1),
-  dueDate: z.string().min(1),
-  discountAmount: z.number().min(0).default(0),
-  taxAmount: z.number().min(0).default(0),
-  notes: z.string().optional(),
-  lineItems: z.array(z.object({
-    description: z.string().min(1),
-    quantity: z.number().positive(),
-    unitPrice: z.number().min(0),
-    sortOrder: z.number().int().default(0),
-  })).min(1, "At least one line item is required"),
-}).refine(d => d.dueDate >= d.issueDate, {
-  message: "Due date must be on or after issue date",
-  path: ["dueDate"],
-})
-
-export type CreateInvoiceFormInput = z.infer<typeof CreateInvoiceFormSchema>
 
 export async function createInvoiceAction(data: CreateInvoiceFormInput) {
   const parsed = CreateInvoiceFormSchema.safeParse(data)

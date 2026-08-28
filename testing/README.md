@@ -1,7 +1,13 @@
 # FleetMan Test Plan — Wave 1
 
-**Status:** Planning complete, ready for implementation by Codex on the branches listed below.
-**This branch:** `test/wave-1-test-plan` (plan + specs only — no test code lands here).
+**Status (2026-08-28 update):** Wave 0 infrastructure and all six specs now have test code written
+(by Codex, then continued by Claude after Codex's token budget ran out on the same session). See
+"Implementation status" at the bottom of this file for exactly what's done, what's authored-but-unrun,
+and what still needs a human/CI to actually execute.
+**This branch:** `test/wave-1-tests` — in practice everything landed on one branch rather than the
+one-branch-per-spec split originally suggested below; splitting it up after the fact would cost more
+than it'd help at this point. Treat the "suggested branch sequence" section as historical intent, not
+what actually happened.
 **Decisions confirmed with Ahmer:** 2026-08-28.
 
 ## Why this exists
@@ -64,3 +70,62 @@ Each of these should get its own `bugfix/` branch once its red test lands.
 - No mobile app tests — the React Native/PowerSync app described in the project brief isn't in this repo yet.
 - `console.log` debug statements left in `middleware.ts` and `login/actions.ts` (logging user id/role/email on every request/attempt) aren't a test target, but will spam test output. Recommend a quick `bugfix/remove-debug-logging` branch before or alongside this wave.
 - CI (GitHub Actions) wiring is deferred — flagged in `00-INFRASTRUCTURE.md` as a follow-up, not required for wave 1 to land.
+
+
+## Implementation status (2026-08-28 update)
+
+**What Codex built (uncommitted work found already in the working tree when Claude picked this up):**
+- Wave 0 infra: `supabase/config.toml`, `vitest.unit.config.ts`, `vitest.integration.config.ts`,
+  `package.json` test scripts, `@playwright/test`/`vitest` devDependencies, a reconstructed baseline
+  core-schema migration (`supabase/migrations/20260827084137_baseline_core_schema.sql`), and the
+  finance migration renumbered to apply after it.
+- Refactors to make business logic independently testable: `canTransitionTripStatus()` extracted into
+  `trip.schema.ts`, `calculateNetPay()` into `payroll.schema.ts`, `CreateInvoiceFormSchema` hoisted
+  from `invoices/actions.ts` into `invoice.schema.ts`.
+- Unit tests: `testing/unit/request.schema.test.ts`, `trip-status.test.ts`, `finance.schema.test.ts`.
+- Integration tests: `testing/integration/auth-middleware.test.ts`, `auth-actions.test.ts` (spec 03,
+  fully mocked — no DB needed).
+- Did **not** implement the two intended-behavior bugfixes (invoice SENT-lock, trip reassignment
+  lock) — only the refactors above, no red/`it.fails` tests for them yet.
+
+**What Claude added on top:**
+- Fixed a real bug in the reconstructed baseline migration: `request_status` had `expense_status`'s
+  `'REJECTED'` instead of `'DISPATCHED'`/`'COMPLETED'`, and `trip_status` had an extra `'DISPATCHED'`
+  that's actually a request status. Values now match `packages/shared/src/schemas/{request,trip}.schema.ts`
+  exactly. **This was not re-verified against the live hosted project** (no DB/network access from the
+  authoring environment) — worth a direct check next time someone has live access.
+- Deleted `packages/shared/src/types/index.ts` (confirmed unused everywhere; its `TripStatus` was the
+  stale duplicate missing `DELIVERED`).
+- Added `testing/fixtures.mjs` (shared seed-user/truck constants) and `supabase/seed.test.mjs` (was
+  referenced by the `db:test:reset` script but didn't exist).
+- Added `testing/rls/_helpers.ts` (role-authenticated client harness, deliberately never falls back to
+  `apps/web/.env.local` since that may point at the live project).
+- Integration tests: `testing/integration/request-lifecycle.test.ts` (spec 01),
+  `trip-dispatch.test.ts` (spec 02, includes the `it.fails` red test for the reassignment-lock gap),
+  `finance.test.ts` (spec 04, includes the `it.fails` red test for the SENT-lock gap).
+- RLS tests: `testing/rls/request-rls.test.ts`, `trip-rls.test.ts`, `finance-rls.test.ts`.
+- Spec 05 (policy matrix): `supabase/migrations/20260828000000_test_policy_introspection.sql` (adds a
+  service-role-only `list_rls_policies()` RPC), `testing/rls/policy-snapshot.json` (hand-derived
+  expected policies), `testing/rls/policy-matrix.test.ts`.
+- Spec 06 (E2E): `playwright.config.ts`, `testing/e2e/auth.spec.ts` (solid — selectors verified against
+  source), `testing/e2e/request-dispatch.spec.ts` (E2E-01 solid; E2E-02 has two TODOs — the exact
+  accessible names for the truck/driver/helper Selects, and the Kanban drag-and-drop interaction,
+  whose underlying library was never confirmed — see that file's header comment).
+
+**What could NOT be executed or verified from the authoring environment, and why:**
+- No Docker available, so `supabase start` (the local Postgres/Auth stack every integration/RLS/E2E
+  test depends on) cannot run there.
+- The `supabase` CLI itself fails on that environment (`No matching Supabase CLI binary package found
+  for linux-x64`), so not even `supabase status` works.
+- No outbound network access to the live Supabase project from that shell, so the enum-swap fix above
+  couldn't be cross-checked against the real hosted schema either.
+- **Only the unit tests (`npm run test:unit`) were actually run and confirmed passing.** Everything in
+  `testing/integration/`, `testing/rls/`, and `testing/e2e/` is authored against the spec and the real
+  code paths, but genuinely unverified — run `npm run db:test:reset` then `npm run test:integration`
+  and `npm run test:e2e` yourself (or in CI) before trusting them, and expect to fix a few things on
+  first run (typos, a selector, a fixture ordering issue) the way you would with any new test suite.
+
+**Two `it.fails` red tests are in the suite by design** (`I-TRIP-10` in `trip-dispatch.test.ts`,
+`I-FIN-07` in `finance.test.ts`) — they document known gaps and will start failing loudly (Vitest
+flags an unexpected pass) the moment someone fixes the underlying bug, which is the signal to flip
+them to a plain `it`.

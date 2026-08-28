@@ -1,6 +1,8 @@
 # Wave 0 — Test Infrastructure (blocking prerequisite)
 
-**Branch:** `test/schema-baseline-and-tooling`
+**Branch:** landed on `test/wave-1-tests` in practice (see testing/README.md).
+
+**Status (2026-08-28):** Mostly done -- config.toml, both migrations, vitest config, npm scripts, and seed.test.mjs all exist. `database.types.ts` (task 2 below) was **not** generated -- see the note under that task. Nothing here has been run end-to-end (`supabase db reset` / `supabase start`) from the authoring environment; see testing/README.md's "Implementation status" section for exactly why and what that means for trusting the rest of the suite.
 
 ## Why this has to come first
 
@@ -22,11 +24,14 @@ implemented for real.
 
 2. **Generate TypeScript types**
    - `supabase gen types typescript --project-id <ref> > packages/shared/src/types/database.types.ts`
-   - Treat this as the source of truth for table row/insert/update types going forward. This also
-     resolves the `TripStatus` drift noted in the original codebase assessment (today it's defined
-     by hand in two places — `packages/shared/src/types/index.ts`, which is dead code, and
-     `packages/shared/src/schemas/trip.schema.ts`, which is the one actually used). Once generated
-     types exist, `types/index.ts` should be deleted rather than kept as a third definition.
+   - **Not done yet** -- needs either a live `supabase link` (CLI credentials) or a running local
+     stack to generate from, neither of which was available where this was written. Still worth
+     doing: right now the app's hand-written Zod schemas are the only source of truth for row
+     shapes, so a column rename in a migration wouldn't be caught by anything until a query fails
+     at runtime.
+   - `packages/shared/src/types/index.ts` (the stale duplicate `TripStatus` missing `DELIVERED`)
+     has already been deleted, since it was confirmed unused anywhere in the app -- that part of
+     this task is done independent of the types-generation step above.
 
 3. **Local Supabase stack**
    - `supabase init` (creates `supabase/config.toml`, currently missing).
@@ -62,13 +67,19 @@ implemented for real.
 
 ## Acceptance criteria for this branch
 
-- `supabase/config.toml` and a baseline core-schema migration exist and are committed.
-- `supabase db reset` succeeds from a clean checkout and produces a fully working local DB (core
-  tables + finance tables + RLS policies + triggers, all from migrations — nothing manual).
-- `packages/shared/src/types/database.types.ts` exists and is generated, not hand-written.
-- `npm run test:unit`, `npm run test:integration`, `npm run test:e2e` all exist as scripts and each
-  runs successfully — even if they only contain a trivial smoke test at this stage. Real test cases
-  land in the branches listed in `README.md`.
+- [x] `supabase/config.toml` and a baseline core-schema migration exist and are committed (the
+      baseline's `request_status`/`trip_status` enums were corrected 2026-08-28 -- see README).
+- [ ] `supabase db reset` succeeds from a clean checkout and produces a fully working local DB (core
+      tables + finance tables + RLS policies + triggers, all from migrations — nothing manual).
+      **Not verified** -- no Docker in the authoring environment. First thing to check when you
+      pick this up.
+- [ ] `packages/shared/src/types/database.types.ts` exists and is generated, not hand-written. **Not
+      done** -- see task 2 above.
+- [x] `npm run test:unit`, `npm run test:integration`, `npm run test:e2e` all exist as scripts.
+- [x] `npm run test:unit` runs successfully (confirmed 2026-08-28).
+- [ ] `npm run test:integration` / `npm run test:e2e` run successfully -- **not verified**, same
+      Docker/network constraint. Real test cases exist for all of wave 1 (see README's
+      "Implementation status"), they just haven't been run yet by anyone.
 
 ## Open item to flag back to Ahmer once this branch is in progress
 
