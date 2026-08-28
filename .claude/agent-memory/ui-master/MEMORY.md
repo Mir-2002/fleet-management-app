@@ -1,0 +1,1 @@
+- [Finance UI Implementation](project_finance_ui.md) — Invoices/expenses/payroll pages, actions, tables, and dialogs; key type patterns to follow
