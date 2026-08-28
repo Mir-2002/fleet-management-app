@@ -71,8 +71,9 @@ ever use the keys printed by `supabase status` for the *local* stack below.
    the live project's credentials, not the local stack's.
 5. `npm run db:test:reset` -- applies every migration and seeds the fixture users/trucks from
    `testing/fixtures.mjs`.
-6. `npm run test:integration` (covers `testing/integration/**` and `testing/rls/**` -- one vitest
-   config) and `npm run test:unit`.
+6. `npm run test:unit` (no DB needed) and `npm run test:integration` (covers `testing/rls/**` only --
+   the name is legacy from before the 2026-08-28 cut, see "Cut: dedicated integration-test layer"
+   above; it needs the local stack from steps 3-5).
 7. For E2E: temporarily point `apps/web/.env.local`'s `NEXT_PUBLIC_SUPABASE_URL` /
    `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` at the local stack (back up the real values first --
    Next.js only reads `.env.local`, and Playwright launches `next dev` from it), then
