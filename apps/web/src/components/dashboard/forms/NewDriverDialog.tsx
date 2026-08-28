@@ -15,7 +15,7 @@ export function NewDriverDialog() {
   const [open, setOpen] = useState(false)
   const form = useForm<CreateDriverInput>({
     resolver: zodResolver(CreateDriverSchema),
-    defaultValues: { fullName: "", licenseNumber: "", email: "", password: "" },
+    defaultValues: { fullName: "", contactInfo: "", licenseNumber: "", email: "", password: "" },
   })
 
   async function onSubmit(data: CreateDriverInput) {
@@ -83,12 +83,25 @@ export function NewDriverDialog() {
             />
             <FormField
               control={form.control}
+              name="contactInfo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="09XXXXXXXXX" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="licenseNumber"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>License Number</FormLabel>
                   <FormControl>
-                    <Input placeholder="A01-23-456789" {...field} />
+                    <Input placeholder="D04-18-123456" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

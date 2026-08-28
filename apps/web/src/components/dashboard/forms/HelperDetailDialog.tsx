@@ -10,6 +10,7 @@ import { updateHelperAction, deleteHelperAction } from "@/app/dashboard/resource
 export type HelperRow = {
   id: string
   full_name: string
+  contact_info: string | null
   created_at: string | null
 }
 
@@ -22,6 +23,7 @@ interface HelperDetailDialogProps {
 export function HelperDetailDialog({ row, open, onOpenChange }: HelperDetailDialogProps) {
   const [editing, setEditing] = useState(false)
   const [fullName, setFullName] = useState(row.full_name)
+  const [contactInfo, setContactInfo] = useState(row.contact_info ?? "")
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -33,14 +35,19 @@ export function HelperDetailDialog({ row, open, onOpenChange }: HelperDetailDial
       setConfirmDelete(false)
       setError(null)
       setFullName(row.full_name)
+      setContactInfo(row.contact_info ?? "")
     }
     onOpenChange(val)
   }
 
   async function handleSave() {
+    if (contactInfo.replace(/\D/g, "").length !== 11) {
+      setError("Contact number must be a valid 11-digit number")
+      return
+    }
     setSaving(true)
     setError(null)
-    const result = await updateHelperAction(row.id, { fullName })
+    const result = await updateHelperAction(row.id, { fullName, contactInfo })
     setSaving(false)
     if (result.success) {
       setEditing(false)
@@ -69,15 +76,25 @@ export function HelperDetailDialog({ row, open, onOpenChange }: HelperDetailDial
 
         <div className="space-y-4 pt-1">
           {editing ? (
-            <div className="space-y-1.5">
-              <Label>Full Name</Label>
-              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
-            </div>
+            <>
+              <div className="space-y-1.5">
+                <Label>Full Name</Label>
+                <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Contact Number</Label>
+                <Input placeholder="09XXXXXXXXX" value={contactInfo} onChange={(e) => setContactInfo(e.target.value)} />
+              </div>
+            </>
           ) : (
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <dt className="text-slate-500">Name</dt>
                 <dd className="text-slate-900 font-medium">{row.full_name}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-slate-500">Contact Number</dt>
+                <dd className="text-slate-900">{row.contact_info ?? "—"}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-slate-500">Joined</dt>

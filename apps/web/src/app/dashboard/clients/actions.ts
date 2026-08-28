@@ -37,7 +37,7 @@ export async function createClientAction(data: CreateClientInput) {
 
 export async function updateClientAction(id: string, data: UpdateClientInput) {
   const parsed = UpdateClientSchema.safeParse(data)
-  if (!parsed.success) return { success: false as const, error: "Invalid data" }
+  if (!parsed.success) return { success: false as const, error: parsed.error.errors[0]?.message ?? "Invalid data" }
 
   const supabase = createAdminClient()
   const { error } = await supabase

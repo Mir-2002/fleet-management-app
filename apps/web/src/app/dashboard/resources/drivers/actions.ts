@@ -21,6 +21,7 @@ export async function createDriverAction(data: CreateDriverInput) {
   const { error: profileError } = await supabase.from('profiles').upsert({
     id: authUser.user.id,
     full_name: parsed.data.fullName,
+    contact_info: parsed.data.contactInfo,
     license_number: parsed.data.licenseNumber,
     role: 'DRIVER',
   })
@@ -36,12 +37,12 @@ export async function createDriverAction(data: CreateDriverInput) {
 
 export async function updateDriverAction(id: string, data: UpdateDriverInput) {
   const parsed = UpdateDriverSchema.safeParse(data)
-  if (!parsed.success) return { success: false as const, error: "Invalid data" }
+  if (!parsed.success) return { success: false as const, error: parsed.error.errors[0]?.message ?? "Invalid data" }
 
   const supabase = createAdminClient()
   const { error } = await supabase
     .from('profiles')
-    .update({ full_name: parsed.data.fullName })
+    .update({ full_name: parsed.data.fullName, contact_info: parsed.data.contactInfo })
     .eq('id', id)
 
   if (error) return { success: false as const, error: error.message }

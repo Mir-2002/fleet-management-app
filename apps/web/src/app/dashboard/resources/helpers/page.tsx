@@ -9,7 +9,7 @@ export default async function HelpersPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, full_name, created_at")
+    .select("id, full_name, contact_info, created_at")
     .eq("role", "HELPER")
     .order("full_name");
 

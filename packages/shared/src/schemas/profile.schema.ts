@@ -46,19 +46,37 @@ const AuthFields = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
+const phoneSchema = z
+  .string()
+  .min(1, "Contact number is required")
+  .refine(
+    (v) => v.replace(/\D/g, "").length === 11,
+    "Must be a valid 11-digit number"
+  );
+
+const licenseSchema = z
+  .string()
+  .min(1, "License number is required")
+  .regex(
+    /^[A-Z]\d{2}-\d{2}-\d{6}$/,
+    "License must be in format A00-00-000000 (e.g. D04-18-123456)"
+  );
+
 // Create schemas — for form validation, enforce role-specific required fields
 export const CreateClientSchema = AuthFields.extend({
   fullName: z.string().min(1, "Name is required"),
-  contactInfo: z.string().min(1, "Contact info is required"),
+  contactInfo: phoneSchema,
 });
 
 export const CreateDriverSchema = AuthFields.extend({
   fullName: z.string().min(1, "Name is required"),
-  licenseNumber: z.string().min(1, "License number is required"),
+  contactInfo: phoneSchema,
+  licenseNumber: licenseSchema,
 });
 
 export const CreateHelperSchema = AuthFields.extend({
   fullName: z.string().min(1, "Name is required"),
+  contactInfo: phoneSchema,
 });
 
 export const CreateDispatcherSchema = z.object({
@@ -77,15 +95,17 @@ export type CreateDispatcherInput = z.infer<typeof CreateDispatcherSchema>;
 
 export const UpdateClientSchema = z.object({
   fullName: z.string().min(1, "Name is required"),
-  contactInfo: z.string().min(1, "Contact info is required"),
+  contactInfo: phoneSchema,
 });
 
 export const UpdateDriverSchema = z.object({
   fullName: z.string().min(1, "Name is required"),
+  contactInfo: phoneSchema,
 });
 
 export const UpdateHelperSchema = z.object({
   fullName: z.string().min(1, "Name is required"),
+  contactInfo: phoneSchema,
 });
 
 export type UpdateClientInput = z.infer<typeof UpdateClientSchema>;

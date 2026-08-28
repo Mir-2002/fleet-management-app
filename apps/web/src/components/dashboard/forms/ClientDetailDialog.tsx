@@ -41,6 +41,10 @@ export function ClientDetailDialog({ row, open, onOpenChange }: ClientDetailDial
   }
 
   async function handleSave() {
+    if (contactInfo.replace(/\D/g, "").length !== 11) {
+      setError("Contact number must be a valid 11-digit number")
+      return
+    }
     setSaving(true)
     setError(null)
     const result = await updateClientAction(row.id, { fullName, contactInfo })
@@ -78,8 +82,8 @@ export function ClientDetailDialog({ row, open, onOpenChange }: ClientDetailDial
                 <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label>Contact Info</Label>
-                <Input value={contactInfo} onChange={(e) => setContactInfo(e.target.value)} />
+                <Label>Contact Number</Label>
+                <Input placeholder="09XXXXXXXXX" value={contactInfo} onChange={(e) => setContactInfo(e.target.value)} />
               </div>
             </>
           ) : (
@@ -89,7 +93,7 @@ export function ClientDetailDialog({ row, open, onOpenChange }: ClientDetailDial
                 <dd className="text-slate-900 font-medium">{row.full_name}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Contact Info</dt>
+                <dt className="text-slate-500">Contact Number</dt>
                 <dd className="text-slate-900">{row.contact_info ?? "—"}</dd>
               </div>
               <div className="flex justify-between">

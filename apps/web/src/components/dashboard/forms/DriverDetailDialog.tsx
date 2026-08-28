@@ -11,6 +11,7 @@ export type DriverRow = {
   id: string
   full_name: string
   license_number: string | null
+  contact_info: string | null
   created_at: string | null
 }
 
@@ -23,6 +24,7 @@ interface DriverDetailDialogProps {
 export function DriverDetailDialog({ row, open, onOpenChange }: DriverDetailDialogProps) {
   const [editing, setEditing] = useState(false)
   const [fullName, setFullName] = useState(row.full_name)
+  const [contactInfo, setContactInfo] = useState(row.contact_info ?? "")
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -34,14 +36,19 @@ export function DriverDetailDialog({ row, open, onOpenChange }: DriverDetailDial
       setConfirmDelete(false)
       setError(null)
       setFullName(row.full_name)
+      setContactInfo(row.contact_info ?? "")
     }
     onOpenChange(val)
   }
 
   async function handleSave() {
+    if (contactInfo.replace(/\D/g, "").length !== 11) {
+      setError("Contact number must be a valid 11-digit number")
+      return
+    }
     setSaving(true)
     setError(null)
-    const result = await updateDriverAction(row.id, { fullName })
+    const result = await updateDriverAction(row.id, { fullName, contactInfo })
     setSaving(false)
     if (result.success) {
       setEditing(false)
@@ -76,6 +83,10 @@ export function DriverDetailDialog({ row, open, onOpenChange }: DriverDetailDial
                 <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
               </div>
               <div className="space-y-1.5">
+                <Label>Contact Number</Label>
+                <Input placeholder="09XXXXXXXXX" value={contactInfo} onChange={(e) => setContactInfo(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
                 <Label className="flex items-center gap-1.5">
                   License Number
                   <span className="text-[11px] text-slate-400 font-normal">(immutable)</span>
@@ -88,6 +99,10 @@ export function DriverDetailDialog({ row, open, onOpenChange }: DriverDetailDial
               <div className="flex justify-between">
                 <dt className="text-slate-500">Name</dt>
                 <dd className="text-slate-900 font-medium">{row.full_name}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-slate-500">Contact Number</dt>
+                <dd className="text-slate-900">{row.contact_info ?? "—"}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-slate-500">License Number</dt>

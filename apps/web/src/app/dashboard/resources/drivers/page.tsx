@@ -9,7 +9,7 @@ export default async function DriversPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, full_name, license_number, created_at")
+    .select("id, full_name, license_number, contact_info, created_at")
     .eq("role", "DRIVER")
     .order("full_name");
 

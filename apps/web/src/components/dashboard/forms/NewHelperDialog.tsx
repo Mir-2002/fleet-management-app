@@ -15,7 +15,7 @@ export function NewHelperDialog() {
   const [open, setOpen] = useState(false)
   const form = useForm<CreateHelperInput>({
     resolver: zodResolver(CreateHelperSchema),
-    defaultValues: { fullName: "", email: "", password: "" },
+    defaultValues: { fullName: "", contactInfo: "", email: "", password: "" },
   })
 
   async function onSubmit(data: CreateHelperInput) {
@@ -76,6 +76,19 @@ export function NewHelperDialog() {
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Juan dela Cruz" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="contactInfo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="09XXXXXXXXX" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
