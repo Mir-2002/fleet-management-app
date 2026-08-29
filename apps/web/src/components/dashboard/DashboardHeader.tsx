@@ -19,18 +19,21 @@ export function DashboardHeader({ displayName, email }: DashboardHeaderProps) {
   const initials = getInitials(displayName || email);
 
   return (
-    <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-6">
-      <span className="text-base font-semibold tracking-tight text-slate-900">
+    <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-primary/80 bg-primary px-6">
+      <span className="text-base font-semibold tracking-tight text-primary-foreground">
         Fleetman
       </span>
 
       <div className="flex items-center gap-3">
-        <span className="text-sm text-slate-600">{displayName || email}</span>
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-xs font-medium text-slate-700">
+        <span className="text-sm text-primary-foreground/80">{displayName || email}</span>
+        <div
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-foreground/20 text-xs font-medium text-primary-foreground"
+          aria-label={`${displayName || email} avatar`}
+        >
           {initials}
         </div>
         <form action={signOut}>
-          <Button variant="ghost" size="sm" className="text-slate-500 hover:text-slate-900">
+          <Button variant="ghost" size="sm" className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-colors duration-150">
             Sign out
           </Button>
         </form>

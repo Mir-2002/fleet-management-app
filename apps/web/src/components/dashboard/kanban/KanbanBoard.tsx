@@ -16,6 +16,7 @@ export interface KanbanCard {
   cargoHandlingTags: string[];
   truckType: string;
   schedule: string;
+  scheduledDate: string | null;
   truckId: string | null;
   truckPlate: string | null;
   driverId: string | null;

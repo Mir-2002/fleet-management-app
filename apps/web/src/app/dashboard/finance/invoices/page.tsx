@@ -58,7 +58,7 @@ export default async function InvoicesPage() {
         action={<NewInvoiceDialog clients={clients} requests={requests} trips={tripsData ?? []} />}
       />
 
-      <div className="px-6 py-4 border-b border-slate-200 shrink-0">
+      <div className="px-6 py-4 border-b border-border shrink-0">
         <InvoiceKpiCards
           outstanding={outstanding}
           sentCount={sentCount}
@@ -73,7 +73,7 @@ export default async function InvoicesPage() {
         {rows.length === 0 ? (
           <EmptyState entity="Invoice" />
         ) : (
-          <div className="rounded-sm border border-slate-200 overflow-hidden">
+          <div className="rounded-sm border border-border overflow-hidden">
             <InvoicesTable rows={rows} clients={clients} requests={requests} />
           </div>
         )}

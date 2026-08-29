@@ -2,7 +2,18 @@
 
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { RequestDetailDialog, type RequestRow } from "@/components/dashboard/forms/RequestDetailDialog"
+
+const STATUS_FILTERS = [
+  { value: 'ALL', label: 'All' },
+  { value: 'PENDING', label: 'Pending' },
+  { value: 'ACCEPTED', label: 'Accepted' },
+  { value: 'DISPATCHED', label: 'Dispatched' },
+  { value: 'COMPLETED', label: 'Completed' },
+  { value: 'CANCELLED', label: 'Cancelled' },
+]
 
 const statusStyles: Record<string, { dot: string; badge: string; label: string }> = {
   PENDING:    { dot: "bg-amber-500",  badge: "bg-amber-50 text-amber-700 border-amber-200",   label: "Pending" },
@@ -26,15 +37,16 @@ export function RequestsTable({ rows }: { rows: RequestRow[] }) {
   const [selected, setSelected] = useState<RequestRow | null>(null)
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
+  const [statusFilter, setStatusFilter] = useState("ALL")
 
-  const filtered = query.trim()
-    ? rows.filter((r) => {
-        const tagStr = (r.cargo_handling_tags ?? []).map((t) => TAG_LABELS[t] ?? t).join(' ')
-        return [tagStr, r.truck_type_requested, r.profiles?.full_name].filter(Boolean).some((f) =>
-          f!.toLowerCase().includes(query.toLowerCase())
-        )
-      })
-    : rows
+  const filtered = rows.filter((r) => {
+    if (statusFilter !== 'ALL' && r.status !== statusFilter) return false
+    if (!query.trim()) return true
+    const tagStr = (r.cargo_handling_tags ?? []).map((t) => TAG_LABELS[t] ?? t).join(' ')
+    return [tagStr, r.truck_type_requested, r.profiles?.full_name].filter(Boolean).some((f) =>
+      f!.toLowerCase().includes(query.toLowerCase())
+    )
+  })
 
   function handleRowClick(row: RequestRow) {
     setSelected(row)
@@ -43,8 +55,18 @@ export function RequestsTable({ rows }: { rows: RequestRow[] }) {
 
   return (
     <>
-      <div className="rounded-sm border border-slate-200 overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-200">
+      <div className="rounded-sm border border-border overflow-hidden">
+      <div className="px-4 py-3 border-b border-border flex items-center gap-2">
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="h-8 w-36 text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {STATUS_FILTERS.map((f) => (
+              <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Input
           placeholder="Search by client, handling type, or truck type…"
           value={query}
@@ -53,35 +75,35 @@ export function RequestsTable({ rows }: { rows: RequestRow[] }) {
         />
       </div>
 
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Client</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Handling</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Truck Type</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Date</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader className="bg-muted/40">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Client</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Handling</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Truck Type</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Date</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {filtered.map((row) => {
             const style = statusStyles[row.status ?? ""] ?? defaultStyle
             return (
-              <tr
+              <TableRow
                 key={row.id}
-                className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
+                className="cursor-pointer"
                 onClick={() => handleRowClick(row)}
               >
-                <td className="px-4 py-3">
+                <TableCell className="px-4 py-3">
                   <span className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[11px] font-medium ${style.badge}`}>
                     <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
                     {style.label}
                   </span>
-                </td>
-                <td className="px-4 py-3 text-slate-900 font-medium">
+                </TableCell>
+                <TableCell className="px-4 py-3 font-medium">
                   {row.profiles?.full_name ?? "—"}
-                </td>
-                <td className="px-4 py-3">
+                </TableCell>
+                <TableCell className="px-4 py-3">
                   <div className="flex flex-wrap gap-1">
                     {(row.cargo_handling_tags ?? []).map((tag) => (
                       <span
@@ -90,30 +112,30 @@ export function RequestsTable({ rows }: { rows: RequestRow[] }) {
                           "rounded-sm border px-1.5 py-0.5 text-[10px] font-medium",
                           tag === 'HAZMAT'
                             ? "border-amber-200 bg-amber-50 text-amber-700"
-                            : "border-slate-200 bg-slate-50 text-slate-600",
+                            : "border-border bg-muted text-muted-foreground",
                         ].join(" ")}
                       >
                         {TAG_LABELS[tag] ?? tag}
                       </span>
                     ))}
                   </div>
-                </td>
-                <td className="px-4 py-3 text-slate-600">{row.truck_type_requested}</td>
-                <td className="px-4 py-3 text-slate-500">
+                </TableCell>
+                <TableCell className="px-4 py-3 text-muted-foreground">{row.truck_type_requested}</TableCell>
+                <TableCell className="px-4 py-3 text-muted-foreground">
                   {row.scheduled_date ? new Date(row.scheduled_date).toLocaleDateString() : "—"}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             )
           })}
           {filtered.length === 0 && (
-            <tr>
-              <td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-400">
+            <TableRow>
+              <TableCell colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">
                 No requests match your search.
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       </div>
 

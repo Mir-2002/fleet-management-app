@@ -35,7 +35,9 @@ export default async function TrucksPage() {
         {rows.length === 0 ? (
           <EmptyState entity="Truck" />
         ) : (
-          <TrucksTable rows={rows} />
+          <div className="rounded-sm border border-border overflow-hidden">
+            <TrucksTable rows={rows} />
+          </div>
         )}
       </div>
     </div>

@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { ClipboardList } from "lucide-react"
 
 interface KpiPendingCardProps {
@@ -12,7 +13,8 @@ export function KpiPendingCard({ count, weekDelta }: KpiPendingCardProps) {
   const isNegative = weekDelta < 0
 
   return (
-    <div className="bg-white border border-slate-200 border-l-[3px] border-l-amber-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
+    <Link href="/dashboard/requests" className="block group">
+    <div className="bg-white border border-border border-l-[3px] border-l-amber-500 rounded-sm p-4 flex items-center justify-between min-h-[100px] hover:border-primary/30 transition-colors cursor-pointer">
       <div className="space-y-1">
         <div className="flex items-center gap-1.5">
           <ClipboardList className="h-3.5 w-3.5 text-slate-400" />
@@ -33,5 +35,6 @@ export function KpiPendingCard({ count, weekDelta }: KpiPendingCardProps) {
         <span className="text-[10px] text-slate-400 mt-0.5">vs. last week</span>
       </div>
     </div>
+    </Link>
   )
 }

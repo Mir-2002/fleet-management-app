@@ -53,3 +53,10 @@ yarn-error.log*
 # Claude Code -- personal/local settings only; .claude/agents and
 # .claude/agent-memory are intentionally tracked project knowledge
 .claude/settings.local.json
+
+# Claude Code knowledge and setup should be local only
+.claude/*
+.agents/*
+
+# Playwright
+.playwright-mcp/*

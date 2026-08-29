@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { PayrollPeriodDetailDialog } from "@/components/dashboard/finance/PayrollPeriodDetailDialog"
 
 export type PayrollPeriodRow = {
@@ -70,7 +71,7 @@ export function PayrollTable({ rows, driversProfiles, helpersProfiles }: Payroll
 
   return (
     <>
-      <div className="px-4 py-3 border-b border-slate-200">
+      <div className="px-4 py-3 border-b border-border">
         <Input
           placeholder="Search by period or preparer…"
           value={query}
@@ -79,49 +80,49 @@ export function PayrollTable({ rows, driversProfiles, helpersProfiles }: Payroll
         />
       </div>
 
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Period</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
-            <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Drivers</th>
-            <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Helpers</th>
-            <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Total Payout</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Prepared By</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader className="bg-muted/40">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Period</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+            <TableHead className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wider">Drivers</TableHead>
+            <TableHead className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wider">Helpers</TableHead>
+            <TableHead className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider">Total Payout</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Prepared By</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {filtered.map((row) => {
             const records = row.payroll_records ?? []
             const driverCount = records.filter((r) => r.profiles?.role === "DRIVER").length
             const helperCount = records.filter((r) => r.profiles?.role === "HELPER").length
             const totalPayout = records.reduce((sum, r) => sum + (r.net_pay ?? 0), 0)
             return (
-              <tr
+              <TableRow
                 key={row.id}
-                className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
+                className="cursor-pointer"
                 onClick={() => { setSelected(row); setOpen(true) }}
               >
-                <td className="px-4 py-3 text-slate-900 font-medium">
+                <TableCell className="px-4 py-3 font-medium">
                   {formatDateRange(row.period_start, row.period_end)}
-                </td>
-                <td className="px-4 py-3"><StatusBadge status={row.status} /></td>
-                <td className="px-4 py-3 text-center text-slate-700">{driverCount}</td>
-                <td className="px-4 py-3 text-center text-slate-700">{helperCount}</td>
-                <td className="px-4 py-3 text-right tabular-nums text-slate-900 font-medium">{formatPHP(totalPayout)}</td>
-                <td className="px-4 py-3 text-slate-500">{row.prepared_by_profile?.full_name ?? "—"}</td>
-              </tr>
+                </TableCell>
+                <TableCell className="px-4 py-3"><StatusBadge status={row.status} /></TableCell>
+                <TableCell className="px-4 py-3 text-center text-muted-foreground">{driverCount}</TableCell>
+                <TableCell className="px-4 py-3 text-center text-muted-foreground">{helperCount}</TableCell>
+                <TableCell className="px-4 py-3 text-right tabular-nums font-medium">{formatPHP(totalPayout)}</TableCell>
+                <TableCell className="px-4 py-3 text-muted-foreground">{row.prepared_by_profile?.full_name ?? "—"}</TableCell>
+              </TableRow>
             )
           })}
           {filtered.length === 0 && (
-            <tr>
-              <td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-400">
+            <TableRow>
+              <TableCell colSpan={6} className="px-4 py-8 text-center text-sm text-muted-foreground">
                 No results.
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       {selected && (
         <PayrollPeriodDetailDialog

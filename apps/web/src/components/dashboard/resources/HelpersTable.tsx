@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { HelperDetailDialog, type HelperRow } from "@/components/dashboard/forms/HelperDetailDialog"
 
 export function HelpersTable({ rows }: { rows: HelperRow[] }) {
@@ -22,7 +23,7 @@ export function HelpersTable({ rows }: { rows: HelperRow[] }) {
 
   return (
     <>
-      <div className="px-4 py-3 border-b border-slate-200">
+      <div className="px-4 py-3 border-b border-border">
         <Input
           placeholder="Search by name…"
           value={query}
@@ -31,35 +32,35 @@ export function HelpersTable({ rows }: { rows: HelperRow[] }) {
         />
       </div>
 
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Name</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Joined</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader className="bg-muted/40">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Name</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Joined</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {filtered.map((row) => (
-            <tr
+            <TableRow
               key={row.id}
-              className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
+              className="cursor-pointer"
               onClick={() => handleRowClick(row)}
             >
-              <td className="px-4 py-3 text-slate-900 font-medium">{row.full_name}</td>
-              <td className="px-4 py-3 text-slate-500">
+              <TableCell className="px-4 py-3 font-medium">{row.full_name}</TableCell>
+              <TableCell className="px-4 py-3 text-muted-foreground">
                 {row.created_at ? new Date(row.created_at).toLocaleDateString() : "—"}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
           {filtered.length === 0 && (
-            <tr>
-              <td colSpan={2} className="px-4 py-8 text-center text-sm text-slate-400">
+            <TableRow>
+              <TableCell colSpan={2} className="px-4 py-8 text-center text-sm text-muted-foreground">
                 No helpers match your search.
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       {selected && (
         <HelperDetailDialog

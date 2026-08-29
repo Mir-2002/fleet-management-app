@@ -15,10 +15,14 @@ export default async function DashboardLayout({
 
   if (!user) redirect("/login");
 
-  const [{ data: profile }, { count: pendingCount }] = await Promise.all([
+  const [{ data: profile }, { count: pendingCount }, { count: pendingExpenseCount }] = await Promise.all([
     supabase.from("profiles").select("full_name").eq("id", user.id).single(),
     supabase
       .from("requests")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "PENDING"),
+    supabase
+      .from("expenses")
       .select("*", { count: "exact", head: true })
       .eq("status", "PENDING"),
   ]);
@@ -29,7 +33,7 @@ export default async function DashboardLayout({
     <div className="flex h-screen flex-col overflow-hidden">
       <DashboardHeader displayName={displayName} email={user.email ?? ""} />
       <div className="flex flex-1 overflow-hidden">
-        <DashboardSidebar pendingCount={pendingCount ?? 0} />
+        <DashboardSidebar pendingCount={pendingCount ?? 0} pendingExpenseCount={pendingExpenseCount ?? 0} />
         <main className="flex-1 overflow-hidden bg-white">
           {children}
         </main>

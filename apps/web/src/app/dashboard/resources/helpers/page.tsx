@@ -23,7 +23,9 @@ export default async function HelpersPage() {
         {rows.length === 0 ? (
           <EmptyState entity="Helper" />
         ) : (
-          <HelpersTable rows={rows} />
+          <div className="rounded-sm border border-border overflow-hidden">
+            <HelpersTable rows={rows} />
+          </div>
         )}
       </div>
     </div>

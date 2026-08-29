@@ -62,7 +62,7 @@ export default async function PayrollPage() {
         action={<NewPayrollPeriodDialog />}
       />
 
-      <div className="px-6 py-4 border-b border-slate-200 shrink-0">
+      <div className="px-6 py-4 border-b border-border shrink-0">
         <PayrollKpiCards
           openPeriods={openPeriods}
           driverCount={driverProfileIds.size}
@@ -75,7 +75,7 @@ export default async function PayrollPage() {
         {rows.length === 0 ? (
           <EmptyState entity="Payroll Period" />
         ) : (
-          <div className="rounded-sm border border-slate-200 overflow-hidden">
+          <div className="rounded-sm border border-border overflow-hidden">
             <PayrollTable
               rows={rows}
               driversProfiles={driversProfiles}

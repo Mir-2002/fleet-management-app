@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { HistoryTrip } from "@/app/dashboard/history/page"
 
 const statusStyles: Record<string, { dot: string; badge: string; label: string }> = {
@@ -21,9 +22,8 @@ export function TripHistoryTable({ trips }: { trips: HistoryTrip[] }) {
     : trips
 
   return (
-    <>
-      <div className="rounded-sm border border-slate-200 overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-200">
+    <div className="rounded-sm border border-border overflow-hidden">
+      <div className="px-4 py-3 border-b border-border">
         <Input
           placeholder="Search by client, cargo, truck, driver…"
           value={query}
@@ -32,52 +32,51 @@ export function TripHistoryTable({ trips }: { trips: HistoryTrip[] }) {
         />
       </div>
 
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Client</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Cargo</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Truck</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Driver</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Helper</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Scheduled</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader className="bg-muted/40">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Client</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Cargo</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Truck</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Driver</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Helper</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Scheduled</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {filtered.map((trip) => {
             const style = statusStyles[trip.status] ?? { dot: "bg-slate-400", badge: "bg-slate-100 text-slate-600 border-slate-200", label: trip.status }
             return (
-              <tr key={trip.id} className="border-b border-slate-100 hover:bg-slate-50">
-                <td className="px-4 py-3">
+              <TableRow key={trip.id}>
+                <TableCell className="px-4 py-3">
                   <span className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[11px] font-medium ${style.badge}`}>
                     <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
                     {style.label}
                   </span>
-                </td>
-                <td className="px-4 py-3 text-slate-900 font-medium">{trip.clientName}</td>
-                <td className="px-4 py-3 text-slate-600">{trip.cargoType}</td>
-                <td className="px-4 py-3 text-slate-600">{trip.truckPlate ?? "—"}</td>
-                <td className="px-4 py-3 text-slate-600">{trip.driverName ?? "—"}</td>
-                <td className="px-4 py-3 text-slate-600">{trip.helperName ?? "—"}</td>
-                <td className="px-4 py-3 text-slate-500">
+                </TableCell>
+                <TableCell className="px-4 py-3 font-medium">{trip.clientName}</TableCell>
+                <TableCell className="px-4 py-3 text-muted-foreground">{trip.cargoType}</TableCell>
+                <TableCell className="px-4 py-3 text-muted-foreground">{trip.truckPlate ?? "—"}</TableCell>
+                <TableCell className="px-4 py-3 text-muted-foreground">{trip.driverName ?? "—"}</TableCell>
+                <TableCell className="px-4 py-3 text-muted-foreground">{trip.helperName ?? "—"}</TableCell>
+                <TableCell className="px-4 py-3 text-muted-foreground">
                   {trip.scheduledDate
                     ? new Date(trip.scheduledDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
                     : "—"}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             )
           })}
           {filtered.length === 0 && (
-            <tr>
-              <td colSpan={7} className="px-4 py-12 text-center text-sm text-slate-400">
+            <TableRow>
+              <TableCell colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
                 {trips.length === 0 ? "No completed trips yet." : "No trips match your search."}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
-      </div>
-    </>
+        </TableBody>
+      </Table>
+    </div>
   )
 }

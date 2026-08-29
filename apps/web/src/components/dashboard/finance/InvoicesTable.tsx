@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { InvoiceDetailDialog } from "@/components/dashboard/finance/InvoiceDetailDialog"
 
 export type InvoiceRow = {
@@ -78,7 +79,7 @@ export function InvoicesTable({ rows, clients, requests }: InvoicesTableProps) {
 
   return (
     <>
-      <div className="px-4 py-3 border-b border-slate-200">
+      <div className="px-4 py-3 border-b border-border">
         <Input
           placeholder="Search by invoice # or client…"
           value={query}
@@ -87,43 +88,43 @@ export function InvoicesTable({ rows, clients, requests }: InvoicesTableProps) {
         />
       </div>
 
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Invoice #</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Client</th>
-            <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Amount</th>
-            <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Balance Due</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Issued</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Due Date</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader className="bg-muted/40">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Invoice #</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Client</TableHead>
+            <TableHead className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider">Amount</TableHead>
+            <TableHead className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider">Balance Due</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Issued</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Due Date</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {filtered.map((row) => (
-            <tr
+            <TableRow
               key={row.id}
-              className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
+              className="cursor-pointer"
               onClick={() => { setSelected(row); setOpen(true) }}
             >
-              <td className="px-4 py-3 text-slate-900 font-mono text-xs">{row.invoice_number ?? "—"}</td>
-              <td className="px-4 py-3 text-slate-900 font-medium">{row.profiles?.full_name ?? "—"}</td>
-              <td className="px-4 py-3 text-slate-900 text-right tabular-nums">{formatPHP(row.grand_total ?? 0)}</td>
-              <td className="px-4 py-3 text-slate-900 text-right tabular-nums">{formatPHP(row.balance_due ?? 0)}</td>
-              <td className="px-4 py-3 text-slate-500">{row.issue_date ? formatDate(row.issue_date) : "—"}</td>
-              <td className="px-4 py-3 text-slate-500">{row.due_date ? formatDate(row.due_date) : "—"}</td>
-              <td className="px-4 py-3"><StatusBadge status={row.status} /></td>
-            </tr>
+              <TableCell className="px-4 py-3 font-mono text-xs">{row.invoice_number ?? "—"}</TableCell>
+              <TableCell className="px-4 py-3 font-medium">{row.profiles?.full_name ?? "—"}</TableCell>
+              <TableCell className="px-4 py-3 text-right tabular-nums">{formatPHP(row.grand_total ?? 0)}</TableCell>
+              <TableCell className="px-4 py-3 text-right tabular-nums">{formatPHP(row.balance_due ?? 0)}</TableCell>
+              <TableCell className="px-4 py-3 text-muted-foreground">{row.issue_date ? formatDate(row.issue_date) : "—"}</TableCell>
+              <TableCell className="px-4 py-3 text-muted-foreground">{row.due_date ? formatDate(row.due_date) : "—"}</TableCell>
+              <TableCell className="px-4 py-3"><StatusBadge status={row.status} /></TableCell>
+            </TableRow>
           ))}
           {filtered.length === 0 && (
-            <tr>
-              <td colSpan={7} className="px-4 py-8 text-center text-sm text-slate-400">
+            <TableRow>
+              <TableCell colSpan={7} className="px-4 py-8 text-center text-sm text-muted-foreground">
                 No results.
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       {selected && (
         <InvoiceDetailDialog

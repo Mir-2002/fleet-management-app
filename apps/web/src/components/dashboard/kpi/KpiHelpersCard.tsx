@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { UserCheck } from "lucide-react"
 import { PieChart, Pie, Cell } from "recharts"
 
@@ -22,7 +23,8 @@ export function KpiHelpersCard({ available, total }: KpiHelpersCardProps) {
   const pieColors = total === 0 ? ["#e2e8f0"] : ["#10b981", "#e2e8f0"]
 
   return (
-    <div className="bg-white border border-slate-200 border-l-[3px] border-l-emerald-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
+    <Link href="/dashboard/resources/helpers" className="block group">
+    <div className="bg-white border border-border border-l-[3px] border-l-emerald-500 rounded-sm p-4 flex items-center justify-between min-h-[100px] hover:border-primary/30 transition-colors cursor-pointer">
       <div className="space-y-1">
         <div className="flex items-center gap-1.5">
           <UserCheck className="h-3.5 w-3.5 text-slate-400" />
@@ -58,5 +60,6 @@ export function KpiHelpersCard({ available, total }: KpiHelpersCardProps) {
         </PieChart>
       </div>
     </div>
+    </Link>
   )
 }

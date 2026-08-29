@@ -84,7 +84,7 @@ export default async function ExpensesPage() {
         action={<NewExpenseDialog trips={trips} trucks={trucks} />}
       />
 
-      <div className="px-6 py-4 border-b border-slate-200 shrink-0">
+      <div className="px-6 py-4 border-b border-border shrink-0">
         <ExpenseKpiCards
           pendingCount={pendingCount}
           approvedThisMonth={approvedThisMonth}
@@ -97,7 +97,7 @@ export default async function ExpensesPage() {
         {rows.length === 0 ? (
           <EmptyState entity="Expense" />
         ) : (
-          <div className="rounded-sm border border-slate-200 overflow-hidden">
+          <div className="rounded-sm border border-border overflow-hidden">
             <ExpensesTable rows={rows} />
           </div>
         )}

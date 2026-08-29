@@ -23,7 +23,9 @@ export default async function ClientsPage() {
         {rows.length === 0 ? (
           <EmptyState entity="Client" />
         ) : (
-          <ClientsTable rows={rows} />
+          <div className="rounded-sm border border-border overflow-hidden">
+            <ClientsTable rows={rows} />
+          </div>
         )}
       </div>
     </div>

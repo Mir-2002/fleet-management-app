@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { TruckDetailDialog, type TruckRow } from "@/components/dashboard/forms/TruckDetailDialog"
 
 export function TrucksTable({ rows }: { rows: TruckRow[] }) {
@@ -24,7 +25,7 @@ export function TrucksTable({ rows }: { rows: TruckRow[] }) {
 
   return (
     <>
-      <div className="px-4 py-3 border-b border-slate-200">
+      <div className="px-4 py-3 border-b border-border">
         <Input
           placeholder="Search by plate, type, or trucking company…"
           value={query}
@@ -33,26 +34,28 @@ export function TrucksTable({ rows }: { rows: TruckRow[] }) {
         />
       </div>
 
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Plate Number</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Type</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Trucking</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader className="bg-muted/40">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Plate Number</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Type</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Trucking</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {filtered.map((row) => (
-            <tr
+            <TableRow
               key={row.id}
-              className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
+              className="cursor-pointer"
               onClick={() => handleRowClick(row)}
             >
-              <td className="px-4 py-3 text-slate-900 font-medium">{row.plate_number}</td>
-              <td className="px-4 py-3 text-slate-600">{row.truck_type}</td>
-              <td className="px-4 py-3 text-slate-600">{row.trucking ?? <span className="text-slate-400">In-house</span>}</td>
-              <td className="px-4 py-3">
+              <TableCell className="px-4 py-3 font-medium">{row.plate_number}</TableCell>
+              <TableCell className="px-4 py-3 text-muted-foreground">{row.truck_type}</TableCell>
+              <TableCell className="px-4 py-3 text-muted-foreground">
+                {row.trucking ?? <span className="text-muted-foreground/60">In-house</span>}
+              </TableCell>
+              <TableCell className="px-4 py-3">
                 {row.is_on_trip ? (
                   <span className="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[11px] font-medium bg-amber-50 text-amber-700 border-amber-200">
                     <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
@@ -69,18 +72,18 @@ export function TrucksTable({ rows }: { rows: TruckRow[] }) {
                     Unavailable
                   </span>
                 )}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
           {filtered.length === 0 && (
-            <tr>
-              <td colSpan={4} className="px-4 py-8 text-center text-sm text-slate-400">
+            <TableRow>
+              <TableCell colSpan={4} className="px-4 py-8 text-center text-sm text-muted-foreground">
                 No trucks match your search.
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       {selected && (
         <TruckDetailDialog

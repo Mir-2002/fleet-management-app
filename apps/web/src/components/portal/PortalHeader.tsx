@@ -27,7 +27,7 @@ export function PortalHeader({ displayName }: { displayName: string }) {
     <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-6">
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
-          <span className="text-base font-semibold tracking-tight text-blue-600">Fleetman</span>
+          <span className="text-base font-semibold tracking-tight text-primary">Fleetman</span>
           <span className="text-xs text-slate-400 font-normal">Client Portal</span>
         </div>
         <nav className="flex items-center gap-1">
@@ -39,8 +39,8 @@ export function PortalHeader({ displayName }: { displayName: string }) {
                 href={link.href}
                 className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-blue-50 text-blue-700"
-                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                    ? "bg-primary/10 text-primary"
+                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors duration-150"
                 }`}
               >
                 {link.label}
@@ -52,7 +52,7 @@ export function PortalHeader({ displayName }: { displayName: string }) {
 
       <div className="flex items-center gap-3">
         <span className="text-sm text-slate-600">{displayName}</span>
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-700">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
           {initials}
         </div>
         <form action={portalSignOut}>

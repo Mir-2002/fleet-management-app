@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { ExternalLink } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ExpenseDetailDialog } from "@/components/dashboard/finance/ExpenseDetailDialog"
 
 export type ExpenseRow = {
@@ -91,7 +92,7 @@ export function ExpensesTable({ rows }: { rows: ExpenseRow[] }) {
 
   return (
     <>
-      <div className="px-4 py-3 border-b border-slate-200">
+      <div className="px-4 py-3 border-b border-border">
         <Input
           placeholder="Search by submitter or category…"
           value={query}
@@ -100,29 +101,29 @@ export function ExpensesTable({ rows }: { rows: ExpenseRow[] }) {
         />
       </div>
 
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Date</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Category</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Submitted By</th>
-            <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Amount</th>
-            <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Receipt</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader className="bg-muted/40">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Date</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Category</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Submitted By</TableHead>
+            <TableHead className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider">Amount</TableHead>
+            <TableHead className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wider">Receipt</TableHead>
+            <TableHead className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {filtered.map((row) => (
-            <tr
+            <TableRow
               key={row.id}
-              className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
+              className="cursor-pointer"
               onClick={() => { setSelected(row); setOpen(true) }}
             >
-              <td className="px-4 py-3 text-slate-500">{row.expense_date ? formatDate(row.expense_date) : "—"}</td>
-              <td className="px-4 py-3"><CategoryChip category={row.category} /></td>
-              <td className="px-4 py-3 text-slate-900 font-medium">{row.submitted_by_profile?.full_name ?? "—"}</td>
-              <td className="px-4 py-3 text-slate-900 text-right tabular-nums font-medium">{formatPHP(row.amount ?? 0)}</td>
-              <td className="px-4 py-3 text-center">
+              <TableCell className="px-4 py-3 text-muted-foreground">{row.expense_date ? formatDate(row.expense_date) : "—"}</TableCell>
+              <TableCell className="px-4 py-3"><CategoryChip category={row.category} /></TableCell>
+              <TableCell className="px-4 py-3 font-medium">{row.submitted_by_profile?.full_name ?? "—"}</TableCell>
+              <TableCell className="px-4 py-3 text-right tabular-nums font-medium">{formatPHP(row.amount ?? 0)}</TableCell>
+              <TableCell className="px-4 py-3 text-center">
                 {row.receipt_url ? (
                   <a
                     href={row.receipt_url}
@@ -134,21 +135,21 @@ export function ExpensesTable({ rows }: { rows: ExpenseRow[] }) {
                     <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 ) : (
-                  <span className="text-slate-300">—</span>
+                  <span className="text-muted-foreground/40">—</span>
                 )}
-              </td>
-              <td className="px-4 py-3"><StatusBadge status={row.status} /></td>
-            </tr>
+              </TableCell>
+              <TableCell className="px-4 py-3"><StatusBadge status={row.status} /></TableCell>
+            </TableRow>
           ))}
           {filtered.length === 0 && (
-            <tr>
-              <td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-400">
+            <TableRow>
+              <TableCell colSpan={6} className="px-4 py-8 text-center text-sm text-muted-foreground">
                 No results.
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       {selected && (
         <ExpenseDetailDialog

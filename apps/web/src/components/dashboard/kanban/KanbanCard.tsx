@@ -47,6 +47,17 @@ interface KanbanCardProps {
   onStatusChange: (cardId: string, newStatus: KanbanStatus) => void
 }
 
+function getDateUrgency(scheduledDate: string | null, status: KanbanStatus): 'overdue' | 'today' | 'normal' {
+  if (!scheduledDate || status === 'done') return 'normal'
+  const d = new Date(scheduledDate)
+  const today = new Date()
+  const scheduled = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  const todayDay = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  if (scheduled < todayDay) return 'overdue'
+  if (scheduled.getTime() === todayDay.getTime()) return 'today'
+  return 'normal'
+}
+
 export function KanbanCard({ card, onStatusChange }: KanbanCardProps) {
   const [detailOpen, setDetailOpen] = useState(false)
   const style = statusStyles[card.status]
@@ -56,10 +67,17 @@ export function KanbanCard({ card, onStatusChange }: KanbanCardProps) {
     .map((t) => TAG_LABELS[t] ?? t)
     .join(', ')
 
+  const urgency = getDateUrgency(card.scheduledDate, card.status)
+  const urgencyBorder = urgency === 'overdue'
+    ? 'border-l-[3px] border-l-red-400'
+    : urgency === 'today'
+    ? 'border-l-[3px] border-l-amber-400'
+    : ''
+
   return (
     <>
       <div
-        className="bg-white border border-slate-200 rounded-sm shadow-sm p-3 space-y-2 hover:shadow-md transition-shadow cursor-pointer"
+        className={`bg-white border border-border rounded-sm shadow-sm p-4 space-y-3 hover:shadow-md transition-shadow duration-150 cursor-pointer ${urgencyBorder}`}
         onClick={() => setDetailOpen(true)}
       >
         <div onClick={(e) => e.stopPropagation()}>
@@ -101,16 +119,30 @@ export function KanbanCard({ card, onStatusChange }: KanbanCardProps) {
           </p>
         </div>
 
-        <p className="text-xs text-slate-400">{card.schedule}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="text-xs text-slate-400">{card.schedule}</p>
+          {urgency === 'overdue' && (
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-sm bg-red-50 text-red-600 border border-red-200">Overdue</span>
+          )}
+          {urgency === 'today' && (
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-sm bg-amber-50 text-amber-700 border border-amber-200">Today</span>
+          )}
+        </div>
 
         {(card.truckPlate || card.driverName || card.helperName) ? (
-          <div className="border-t border-slate-100 pt-1.5 text-[11px] text-slate-400 space-y-0.5">
+          <div className="border-t border-border/50 pt-1.5 text-[11px] text-slate-400 space-y-0.5">
             {card.truckPlate && <p>Truck: {card.truckPlate}</p>}
             {card.driverName && <p>Driver: {card.driverName}</p>}
             {card.helperName && <p>Helper: {card.helperName}</p>}
           </div>
+        ) : card.status === 'todo' ? (
+          <div className="border-t border-border/50 pt-1.5">
+            <span className="inline-flex items-center gap-1 rounded-sm border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
+              ⚠ Unassigned
+            </span>
+          </div>
         ) : (
-          <p className="text-[11px] text-slate-300 border-t border-slate-100 pt-1.5">
+          <p className="text-[11px] text-slate-300 border-t border-border/50 pt-1.5">
             No assignments yet
           </p>
         )}

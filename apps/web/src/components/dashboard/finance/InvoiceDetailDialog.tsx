@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -216,57 +217,59 @@ export function InvoiceDetailDialog({ row, open, onOpenChange }: InvoiceDetailDi
             {loadingItems ? (
               <p className="text-sm text-slate-400">Loading…</p>
             ) : (
-              <table className="w-full text-sm border border-slate-200 rounded-sm overflow-hidden">
-                <thead className="bg-slate-50 border-b border-slate-200">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-slate-500">Description</th>
-                    <th className="px-3 py-2 text-center text-xs font-semibold text-slate-500">Qty</th>
-                    <th className="px-3 py-2 text-right text-xs font-semibold text-slate-500">Unit Price</th>
-                    <th className="px-3 py-2 text-right text-xs font-semibold text-slate-500">Subtotal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lineItems.map((li) => (
-                    <tr key={li.id} className="border-b border-slate-100">
-                      <td className="px-3 py-2 text-slate-800">{li.description}</td>
-                      <td className="px-3 py-2 text-center text-slate-600">{li.quantity}</td>
-                      <td className="px-3 py-2 text-right tabular-nums text-slate-600">{formatPHP(li.unit_price)}</td>
-                      <td className="px-3 py-2 text-right tabular-nums text-slate-800">{formatPHP(li.subtotal ?? li.quantity * li.unit_price)}</td>
-                    </tr>
-                  ))}
-                  {lineItems.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="px-3 py-4 text-center text-sm text-slate-400">No line items.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+              <div className="rounded-sm border border-border overflow-hidden">
+                <Table>
+                  <TableHeader className="bg-muted/40">
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="px-3 py-2 text-xs font-semibold uppercase tracking-wider">Description</TableHead>
+                      <TableHead className="px-3 py-2 text-center text-xs font-semibold uppercase tracking-wider">Qty</TableHead>
+                      <TableHead className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wider">Unit Price</TableHead>
+                      <TableHead className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wider">Subtotal</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {lineItems.map((li) => (
+                      <TableRow key={li.id}>
+                        <TableCell className="px-3 py-2">{li.description}</TableCell>
+                        <TableCell className="px-3 py-2 text-center text-muted-foreground">{li.quantity}</TableCell>
+                        <TableCell className="px-3 py-2 text-right tabular-nums text-muted-foreground">{formatPHP(li.unit_price)}</TableCell>
+                        <TableCell className="px-3 py-2 text-right tabular-nums font-medium">{formatPHP(li.subtotal ?? li.quantity * li.unit_price)}</TableCell>
+                      </TableRow>
+                    ))}
+                    {lineItems.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={4} className="px-3 py-4 text-center text-sm text-muted-foreground">No line items.</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             )}
           </div>
 
           {/* Totals */}
-          <div className="rounded-sm border border-slate-200 bg-slate-50 p-3 space-y-1.5 text-sm">
-            <div className="flex justify-between text-slate-600">
+          <div className="rounded-sm border border-border bg-muted/30 p-3 space-y-1.5 text-sm">
+            <div className="flex justify-between text-muted-foreground">
               <span>Subtotal</span>
               <span className="tabular-nums">{formatPHP(subtotal)}</span>
             </div>
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-muted-foreground">
               <span>Discount</span>
               <span className="tabular-nums text-red-600">−{formatPHP(row.discount_amount ?? 0)}</span>
             </div>
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-muted-foreground">
               <span>Tax</span>
               <span className="tabular-nums">{formatPHP(row.tax_amount ?? 0)}</span>
             </div>
-            <div className="flex justify-between font-semibold text-slate-900 border-t border-slate-200 pt-1.5">
+            <div className="flex justify-between font-semibold text-slate-900 border-t border-border pt-1.5">
               <span>Grand Total</span>
               <span className="tabular-nums">{formatPHP(row.grand_total ?? 0)}</span>
             </div>
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-muted-foreground">
               <span>Amount Paid</span>
               <span className="tabular-nums">{formatPHP(row.amount_paid ?? 0)}</span>
             </div>
-            <div className="flex justify-between font-semibold text-slate-900 border-t border-slate-200 pt-1.5">
+            <div className="flex justify-between font-semibold text-slate-900 border-t border-border pt-1.5">
               <span>Balance Due</span>
               <span className="tabular-nums">{formatPHP(row.balance_due ?? 0)}</span>
             </div>

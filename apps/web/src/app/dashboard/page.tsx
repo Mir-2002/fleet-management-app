@@ -142,6 +142,7 @@ export default async function DashboardPage() {
               year: "numeric",
             })
           : "—",
+        scheduledDate: req?.scheduled_date ?? null,
         truckId: t.truck_id,
         truckPlate: t.trucks?.plate_number ?? null,
         driverId: t.driver_id,

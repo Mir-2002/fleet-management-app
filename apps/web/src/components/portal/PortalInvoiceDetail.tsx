@@ -1,3 +1,5 @@
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+
 type LineItem = {
   id: string
   description: string
@@ -59,7 +61,7 @@ export function PortalInvoiceDetail({ invoice, lineItems }: PortalInvoiceDetailP
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-xl font-semibold text-slate-900 font-mono">{invoice.invoice_number}</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Invoice</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Invoice</p>
         </div>
         <span className={`inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 text-xs font-medium ${style.badge}`}>
           <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
@@ -68,26 +70,26 @@ export function PortalInvoiceDetail({ invoice, lineItems }: PortalInvoiceDetailP
       </div>
 
       {/* Info card */}
-      <div className="rounded-lg border border-slate-200 bg-white p-5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4">Invoice Details</p>
+      <div className="rounded-sm border border-border bg-white p-5">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Invoice Details</p>
         <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
           <div>
-            <p className="text-xs text-slate-400 mb-0.5">Issue Date</p>
+            <p className="text-xs text-muted-foreground/70 mb-0.5">Issue Date</p>
             <p className="text-slate-700">{formatDate(invoice.issue_date)}</p>
           </div>
           <div>
-            <p className="text-xs text-slate-400 mb-0.5">Due Date</p>
+            <p className="text-xs text-muted-foreground/70 mb-0.5">Due Date</p>
             <p className="text-slate-700">{formatDate(invoice.due_date)}</p>
           </div>
           {invoice.status === "PAID" && invoice.payment_method && (
             <div>
-              <p className="text-xs text-slate-400 mb-0.5">Payment Method</p>
+              <p className="text-xs text-muted-foreground/70 mb-0.5">Payment Method</p>
               <p className="text-slate-700">{PAYMENT_METHOD_LABELS[invoice.payment_method] ?? invoice.payment_method}</p>
             </div>
           )}
           {invoice.status === "PAID" && invoice.payment_date && (
             <div>
-              <p className="text-xs text-slate-400 mb-0.5">Payment Date</p>
+              <p className="text-xs text-muted-foreground/70 mb-0.5">Payment Date</p>
               <p className="text-slate-700">{formatDate(invoice.payment_date)}</p>
             </div>
           )}
@@ -95,60 +97,62 @@ export function PortalInvoiceDetail({ invoice, lineItems }: PortalInvoiceDetailP
       </div>
 
       {/* Line items card */}
-      <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Services</p>
-        <table className="w-full text-sm border border-slate-200 rounded-sm overflow-hidden">
-          <thead className="bg-slate-50 border-b border-slate-200">
-            <tr>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-slate-500">Description</th>
-              <th className="px-3 py-2 text-center text-xs font-semibold text-slate-500">Qty</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-slate-500">Unit Price</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-slate-500">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className="rounded-sm border border-border bg-white overflow-hidden">
+        <div className="px-5 pt-5 pb-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Services</p>
+        </div>
+        <Table>
+          <TableHeader className="bg-muted/40">
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="px-5 py-2.5 text-xs font-semibold uppercase tracking-wider">Description</TableHead>
+              <TableHead className="px-5 py-2.5 text-center text-xs font-semibold uppercase tracking-wider">Qty</TableHead>
+              <TableHead className="px-5 py-2.5 text-right text-xs font-semibold uppercase tracking-wider">Unit Price</TableHead>
+              <TableHead className="px-5 py-2.5 text-right text-xs font-semibold uppercase tracking-wider">Subtotal</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {lineItems.map((li) => (
-              <tr key={li.id} className="border-b border-slate-100">
-                <td className="px-3 py-2 text-slate-800">{li.description}</td>
-                <td className="px-3 py-2 text-center text-slate-600">{li.quantity}</td>
-                <td className="px-3 py-2 text-right tabular-nums text-slate-600">{formatPHP(li.unit_price)}</td>
-                <td className="px-3 py-2 text-right tabular-nums text-slate-800">{formatPHP(li.subtotal ?? li.quantity * li.unit_price)}</td>
-              </tr>
+              <TableRow key={li.id}>
+                <TableCell className="px-5 py-2.5">{li.description}</TableCell>
+                <TableCell className="px-5 py-2.5 text-center text-muted-foreground">{li.quantity}</TableCell>
+                <TableCell className="px-5 py-2.5 text-right tabular-nums text-muted-foreground">{formatPHP(li.unit_price)}</TableCell>
+                <TableCell className="px-5 py-2.5 text-right tabular-nums font-medium">{formatPHP(li.subtotal ?? li.quantity * li.unit_price)}</TableCell>
+              </TableRow>
             ))}
             {lineItems.length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-3 py-4 text-center text-sm text-slate-400">No line items.</td>
-              </tr>
+              <TableRow>
+                <TableCell colSpan={4} className="px-5 py-4 text-center text-sm text-muted-foreground">No line items.</TableCell>
+              </TableRow>
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {/* Totals card */}
-      <div className="rounded-lg border border-slate-200 bg-white p-5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4">Summary</p>
+      <div className="rounded-sm border border-border bg-white p-5">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Summary</p>
         <div className="space-y-1.5 text-sm">
-          <div className="flex justify-between text-slate-600">
+          <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
             <span className="tabular-nums">{formatPHP(invoice.subtotal)}</span>
           </div>
-          <div className="flex justify-between text-slate-600">
+          <div className="flex justify-between text-muted-foreground">
             <span>Discount</span>
             <span className="tabular-nums text-red-600">−{formatPHP(invoice.discount_amount ?? 0)}</span>
           </div>
-          <div className="flex justify-between text-slate-600">
+          <div className="flex justify-between text-muted-foreground">
             <span>Tax</span>
             <span className="tabular-nums">{formatPHP(invoice.tax_amount ?? 0)}</span>
           </div>
-          <div className="flex justify-between font-semibold text-slate-900 border-t border-slate-200 pt-1.5">
+          <div className="flex justify-between font-semibold text-slate-900 border-t border-border pt-1.5">
             <span>Grand Total</span>
             <span className="tabular-nums">{formatPHP(invoice.grand_total)}</span>
           </div>
-          <div className="flex justify-between text-slate-600">
+          <div className="flex justify-between text-muted-foreground">
             <span>Amount Paid</span>
             <span className="tabular-nums">{formatPHP(invoice.amount_paid ?? 0)}</span>
           </div>
-          <div className={`flex justify-between font-semibold border-t border-slate-200 pt-1.5 ${balanceDue > 0 ? "text-red-600" : "text-green-700"}`}>
+          <div className={`flex justify-between font-semibold border-t border-border pt-1.5 ${balanceDue > 0 ? "text-red-600" : "text-green-700"}`}>
             <span>Balance Due</span>
             <span className="tabular-nums">{formatPHP(balanceDue)}</span>
           </div>
@@ -157,8 +161,8 @@ export function PortalInvoiceDetail({ invoice, lineItems }: PortalInvoiceDetailP
 
       {/* Notes card */}
       {invoice.notes && (
-        <div className="rounded-lg border border-slate-200 bg-white p-5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Notes</p>
+        <div className="rounded-sm border border-border bg-white p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Notes</p>
           <p className="text-sm text-slate-700 whitespace-pre-wrap">{invoice.notes}</p>
         </div>
       )}

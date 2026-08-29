@@ -23,7 +23,9 @@ export default async function DriversPage() {
         {rows.length === 0 ? (
           <EmptyState entity="Driver" />
         ) : (
-          <DriversTable rows={rows} />
+          <div className="rounded-sm border border-border overflow-hidden">
+            <DriversTable rows={rows} />
+          </div>
         )}
       </div>
     </div>

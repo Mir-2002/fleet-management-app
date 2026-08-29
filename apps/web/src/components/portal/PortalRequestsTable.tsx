@@ -35,15 +35,15 @@ const defaultStyle = { dot: "bg-slate-400", badge: "bg-slate-100 text-slate-600 
 export function PortalRequestsTable({ rows }: { rows: RequestRow[] }) {
   if (rows.length === 0) {
     return (
-      <div className="rounded-lg border border-slate-200 bg-white py-16 text-center">
-        <p className="text-slate-500 text-sm">No requests yet.</p>
-        <p className="text-slate-400 text-xs mt-1">Click "New Request" to submit your first shipment.</p>
+      <div className="rounded-sm border border-border bg-white py-16 text-center">
+        <p className="text-muted-foreground text-sm">No requests yet.</p>
+        <p className="text-muted-foreground/60 text-xs mt-1">Click "New Request" to submit your first shipment.</p>
       </div>
     )
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
+    <div className="rounded-sm border border-border bg-white overflow-hidden">
       {rows.map((row, i) => {
         const style = statusStyles[row.status] ?? defaultStyle
         const tagSummary = (row.cargo_handling_tags ?? []).map((t) => TAG_LABELS[t] ?? t).join(', ')
@@ -51,8 +51,8 @@ export function PortalRequestsTable({ rows }: { rows: RequestRow[] }) {
           <Link
             key={row.id}
             href={`/portal/requests/${row.id}`}
-            className={`flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition-colors ${
-              i !== 0 ? "border-t border-slate-100" : ""
+            className={`flex items-center gap-4 px-5 py-4 hover:bg-muted/30 transition-colors ${
+              i !== 0 ? "border-t border-border/60" : ""
             }`}
           >
             <span className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[11px] font-medium shrink-0 ${style.badge}`}>
