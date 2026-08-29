@@ -45,40 +45,40 @@ export function ExpenseKpiCards({
   return (
     <div className="grid grid-cols-2 xl:grid-cols-3 gap-3">
       {/* Pending Approval */}
-      <div className="bg-white border border-slate-200 border-l-[3px] border-l-amber-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
+      <div className="bg-card border border-border border-l-[3px] border-l-amber-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
         <div className="space-y-1">
           <div className="flex items-center gap-1.5">
-            <Clock className="h-3.5 w-3.5 text-slate-400" />
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Pending Approval</p>
+            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Pending Approval</p>
           </div>
-          <p className="text-3xl font-semibold text-slate-900 tabular-nums">{pendingCount === 0 ? "—" : pendingCount}</p>
-          <p className="text-xs text-slate-400">awaiting review</p>
+          <p className="text-3xl font-semibold text-foreground tabular-nums">{pendingCount === 0 ? "—" : pendingCount}</p>
+          <p className="text-xs text-muted-foreground">awaiting review</p>
         </div>
       </div>
 
       {/* Approved This Month */}
-      <div className="bg-white border border-slate-200 border-l-[3px] border-l-green-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
+      <div className="bg-card border border-border border-l-[3px] border-l-green-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
         <div className="space-y-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Approved This Month</p>
+            <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Approved This Month</p>
           </div>
-          <p className="text-xl font-semibold text-slate-900 tabular-nums truncate">{formatPHP(approvedThisMonth)}</p>
-          <p className="text-xs text-slate-400">of {formatPHP(totalThisMonth)} submitted</p>
+          <p className="text-xl font-semibold text-foreground tabular-nums truncate">{formatPHP(approvedThisMonth)}</p>
+          <p className="text-xs text-muted-foreground">of {formatPHP(totalThisMonth)} submitted</p>
         </div>
       </div>
 
       {/* By Category */}
-      <div className="col-span-2 xl:col-span-1 bg-white border border-slate-200 border-l-[3px] border-l-indigo-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
+      <div className="col-span-2 xl:col-span-1 bg-card border border-border border-l-[3px] border-l-indigo-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
         <div className="space-y-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <Tag className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">By Category</p>
+            <Tag className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">By Category</p>
           </div>
-          <p className="text-xl font-semibold text-slate-900 truncate">
+          <p className="text-xl font-semibold text-foreground truncate">
             {topCategory ? topCategory.name : "—"}
           </p>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             {topCategory ? `${formatPHP(topCategory.value)} top spend` : "no data this month"}
           </p>
         </div>

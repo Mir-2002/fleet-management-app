@@ -16,7 +16,7 @@ export default async function PayrollPage() {
   ] = await Promise.all([
     supabase
       .from("payroll_periods")
-      .select("id, period_start, period_end, status, created_at, prepared_by_profile:profiles!prepared_by(full_name), payroll_records(id, profile_id, net_pay, profiles!profile_id(role, full_name))")
+      .select("id, period_start, period_end, status, created_at, prepared_by_profile:profiles!prepared_by(full_name), payroll_records(id, profile_id, net_pay, payment_date, profiles!profile_id(role, full_name))")
       .order("period_start", { ascending: false }),
     supabase
       .from("profiles")

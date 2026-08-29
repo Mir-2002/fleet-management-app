@@ -49,10 +49,10 @@ const statusStyles: Record<string, { dot: string; badge: string; label: string }
   ACCEPTED:   { dot: "bg-indigo-500", badge: "bg-indigo-50 text-indigo-700 border-indigo-200", label: "Accepted" },
   DISPATCHED: { dot: "bg-indigo-500", badge: "bg-indigo-50 text-indigo-700 border-indigo-200", label: "Dispatched" },
   COMPLETED:  { dot: "bg-green-500",  badge: "bg-green-50 text-green-700 border-green-200",   label: "Completed" },
-  CANCELLED:  { dot: "bg-slate-400",  badge: "bg-slate-100 text-slate-600 border-slate-200",  label: "Cancelled" },
+  CANCELLED:  { dot: "bg-muted-foreground",  badge: "bg-muted text-muted-foreground border-border",  label: "Cancelled" },
 }
 
-const defaultStyle = { dot: "bg-slate-400", badge: "bg-slate-100 text-slate-600 border-slate-200", label: "Unknown" }
+const defaultStyle = { dot: "bg-muted-foreground", badge: "bg-muted text-muted-foreground border-border", label: "Unknown" }
 
 interface RequestDetailDialogProps {
   row: RequestRow
@@ -185,7 +185,7 @@ export function RequestDetailDialog({ row, open, onOpenChange }: RequestDetailDi
             <>
               <div className="space-y-1.5">
                 <Label>Client</Label>
-                <Input value={row.profiles?.full_name ?? "—"} disabled className="bg-slate-50" />
+                <Input value={row.profiles?.full_name ?? "—"} disabled className="bg-muted/30" />
               </div>
 
               <div className="space-y-1.5">
@@ -204,10 +204,10 @@ export function RequestDetailDialog({ row, open, onOpenChange }: RequestDetailDi
                           selected && isHazmat
                             ? "border-amber-500 bg-amber-50 text-amber-700"
                             : selected
-                            ? "border-slate-700 bg-slate-700 text-white"
+                            ? "border-foreground bg-foreground text-background"
                             : isHazmat
                             ? "border-amber-200 bg-white text-amber-600 hover:bg-amber-50"
-                            : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
+                            : "border-border bg-background text-muted-foreground hover:bg-muted/30",
                         ].join(" ")}
                       >
                         {tag.label}
@@ -229,12 +229,12 @@ export function RequestDetailDialog({ row, open, onOpenChange }: RequestDetailDi
                       onChange={(e) => setCargoWeight(e.target.value)}
                       className="pr-9"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">kg</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">kg</span>
                   </div>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Measured</Label>
-                  <div className="flex rounded-md border border-slate-200 overflow-hidden h-10">
+                  <div className="flex rounded-md border border-border overflow-hidden h-10">
                     {(['PER_ITEM', 'WHOLE'] as const).map((mode) => (
                       <button
                         key={mode}
@@ -243,8 +243,8 @@ export function RequestDetailDialog({ row, open, onOpenChange }: RequestDetailDi
                         className={[
                           "flex-1 text-xs font-medium transition-colors",
                           cargoMeasurementMode === mode
-                            ? "bg-slate-700 text-white"
-                            : "bg-white text-slate-500 hover:bg-slate-50",
+                            ? "bg-foreground text-background"
+                            : "bg-white text-muted-foreground hover:bg-muted/30",
                         ].join(" ")}
                       >
                         {mode === 'PER_ITEM' ? 'Per Item' : 'Whole'}
@@ -255,7 +255,7 @@ export function RequestDetailDialog({ row, open, onOpenChange }: RequestDetailDi
               </div>
 
               <div className="space-y-1.5">
-                <Label>Dimensions <span className="text-slate-400 font-normal text-xs">(optional)</span></Label>
+                <Label>Dimensions <span className="text-muted-foreground font-normal text-xs">(optional)</span></Label>
                 <div className="grid grid-cols-3 gap-2">
                   {([
                     { val: cargoLength, set: setCargoLength, label: 'L' },
@@ -272,7 +272,7 @@ export function RequestDetailDialog({ row, open, onOpenChange }: RequestDetailDi
                         onChange={(e) => set(e.target.value)}
                         className="pr-9"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">cm</span>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">cm</span>
                     </div>
                   ))}
                 </div>
@@ -325,11 +325,11 @@ export function RequestDetailDialog({ row, open, onOpenChange }: RequestDetailDi
 
               <dl className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <dt className="text-slate-500">Client</dt>
-                  <dd className="text-slate-900 font-medium">{row.profiles?.full_name ?? "—"}</dd>
+                  <dt className="text-muted-foreground">Client</dt>
+                  <dd className="text-foreground font-medium">{row.profiles?.full_name ?? "—"}</dd>
                 </div>
                 <div className="flex justify-between items-start">
-                  <dt className="text-slate-500 shrink-0">Handling</dt>
+                  <dt className="text-muted-foreground shrink-0">Handling</dt>
                   <dd className="flex flex-wrap gap-1 justify-end">
                     {(row.cargo_handling_tags ?? []).map((tag) => (
                       <span
@@ -338,7 +338,7 @@ export function RequestDetailDialog({ row, open, onOpenChange }: RequestDetailDi
                           "rounded-sm border px-1.5 py-0.5 text-[10px] font-medium",
                           tag === 'HAZMAT'
                             ? "border-amber-200 bg-amber-50 text-amber-700"
-                            : "border-slate-200 bg-slate-50 text-slate-600",
+                            : "border-border bg-muted/30 text-muted-foreground",
                         ].join(" ")}
                       >
                         {TAG_LABELS[tag] ?? tag}
@@ -347,38 +347,38 @@ export function RequestDetailDialog({ row, open, onOpenChange }: RequestDetailDi
                   </dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-slate-500">Weight</dt>
-                  <dd className="text-slate-900">
+                  <dt className="text-muted-foreground">Weight</dt>
+                  <dd className="text-foreground">
                     {row.cargo_weight} kg
-                    <span className="text-slate-400 text-xs ml-1.5">
+                    <span className="text-muted-foreground text-xs ml-1.5">
                       ({row.cargo_measurement_mode === 'PER_ITEM' ? 'per item' : 'whole'})
                     </span>
                   </dd>
                 </div>
                 {hasDimensions && (
                   <div className="flex justify-between">
-                    <dt className="text-slate-500">Dimensions</dt>
-                    <dd className="text-slate-900">
+                    <dt className="text-muted-foreground">Dimensions</dt>
+                    <dd className="text-foreground">
                       {row.cargo_length} × {row.cargo_width} × {row.cargo_height} cm
                     </dd>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <dt className="text-slate-500">Truck Type</dt>
-                  <dd className="text-slate-900">{row.truck_type_requested}</dd>
+                  <dt className="text-muted-foreground">Truck Type</dt>
+                  <dd className="text-foreground">{row.truck_type_requested}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-slate-500">Scheduled</dt>
-                  <dd className="text-slate-900">{formattedDateTime}</dd>
+                  <dt className="text-muted-foreground">Scheduled</dt>
+                  <dd className="text-foreground">{formattedDateTime}</dd>
                 </div>
               </dl>
 
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                   Special Instructions
                 </p>
-                <div className="rounded-sm bg-slate-50 border border-slate-200 px-3 py-2 text-sm text-slate-700 min-h-[56px]">
-                  {row.notes || <span className="text-slate-400 italic">No special instructions</span>}
+                <div className="rounded-sm bg-muted/30 border border-border px-3 py-2 text-sm text-foreground min-h-[56px]">
+                  {row.notes || <span className="text-muted-foreground italic">No special instructions</span>}
                 </div>
               </div>
             </>

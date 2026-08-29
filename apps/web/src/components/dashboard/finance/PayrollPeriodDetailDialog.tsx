@@ -165,6 +165,9 @@ export function PayrollPeriodDetailDialog({
       paymentReference: data.paymentReference,
     })
     if (result.success) {
+      setRecords((prev) =>
+        prev.map((r) => r.id === recordId ? { ...r, payment_date: data.paymentDate } : r)
+      )
       router.refresh()
       setPayingRecordId(null)
       markPaidForm.reset()
@@ -189,23 +192,23 @@ export function PayrollPeriodDetailDialog({
           {/* Header info */}
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Prepared By</p>
-              <p className="text-slate-700">{row.prepared_by_profile?.full_name ?? "—"}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Prepared By</p>
+              <p className="text-foreground">{row.prepared_by_profile?.full_name ?? "—"}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Employees</p>
-              <p className="text-slate-700">{records.length}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Employees</p>
+              <p className="text-foreground">{records.length}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Total Net Pay</p>
-              <p className="text-slate-900 font-semibold">{formatPHP(totalNetPay)}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Total Net Pay</p>
+              <p className="text-foreground font-semibold">{formatPHP(totalNetPay)}</p>
             </div>
           </div>
 
           {/* Payroll Records Table */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-slate-700">Payroll Records</p>
+              <p className="text-sm font-medium text-foreground">Payroll Records</p>
               {row.status === "DRAFT" && (
                 <Button
                   type="button"
@@ -220,7 +223,7 @@ export function PayrollPeriodDetailDialog({
             </div>
 
             {showAddEmployee && (
-              <div className="border border-slate-200 rounded-sm p-3 bg-slate-50 mb-3">
+              <div className="border border-border rounded-sm p-3 bg-muted/30 mb-3">
                 <Form {...addEmployeeForm}>
                   <form onSubmit={addEmployeeForm.handleSubmit(handleAddEmployee)} className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">

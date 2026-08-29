@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Plus, X } from "lucide-react"
+import { Plus, X, ChevronDown, Loader2 } from "lucide-react"
 import { z } from "zod"
-import { createInvoiceAction } from "@/app/dashboard/finance/invoices/actions"
+import { createInvoiceAction, getClientTripsAction, type ClientTrip } from "@/app/dashboard/finance/invoices/actions"
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,8 @@ const lineItemSchema = z.object({
   description: z.string().min(1, "Required"),
   quantity: z.coerce.number().positive("Must be > 0"),
   unitPrice: z.coerce.number().min(0, "Must be >= 0"),
+  tripId: z.string().optional(),
+  notes: z.string().optional(),
 })
 
 const newInvoiceSchema = z.object({
@@ -59,8 +61,25 @@ interface NewInvoiceDialogProps {
   trips: { id: string }[]
 }
 
+function truncate(str: string, max: number) {
+  return str.length > max ? str.slice(0, max - 1) + "…" : str
+}
+
+function formatTripDate(dateStr: string | null): string {
+  if (!dateStr) return "—"
+  return new Date(dateStr).toLocaleDateString("en-PH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })
+}
+
 export function NewInvoiceDialog({ clients }: NewInvoiceDialogProps) {
   const [open, setOpen] = useState(false)
+  const [availableTrips, setAvailableTrips] = useState<ClientTrip[]>([])
+  const [tripsLoading, setTripsLoading] = useState(false)
+  const [tripPopoverOpen, setTripPopoverOpen] = useState(false)
+  const popoverRef = useRef<HTMLDivElement>(null)
   const today = new Date().toISOString().split("T")[0]
 
   const form = useForm<NewInvoiceFormValues>({
@@ -72,7 +91,7 @@ export function NewInvoiceDialog({ clients }: NewInvoiceDialogProps) {
       discountAmount: 0,
       taxAmount: 0,
       notes: "",
-      lineItems: [{ description: "", quantity: 1, unitPrice: 0 }],
+      lineItems: [{ description: "", quantity: 1, unitPrice: 0, tripId: undefined, notes: "" }],
     },
   })
 
@@ -90,6 +109,32 @@ export function NewInvoiceDialog({ clients }: NewInvoiceDialogProps) {
   const tax = Number(form.watch("taxAmount")) || 0
   const grandTotal = subtotal - discount + tax
 
+  const addedTripIds = new Set(fields.map(f => (f as any).tripId).filter(Boolean))
+
+  // Close popover on outside click
+  useEffect(() => {
+    if (!tripPopoverOpen) return
+    function handleClick(e: MouseEvent) {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        setTripPopoverOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [tripPopoverOpen])
+
+  async function handleClientChange(value: string) {
+    form.setValue("clientId", value)
+    setAvailableTrips([])
+    setTripPopoverOpen(false)
+    if (value) {
+      setTripsLoading(true)
+      const trips = await getClientTripsAction(value)
+      setAvailableTrips(trips)
+      setTripsLoading(false)
+    }
+  }
+
   async function onSubmit(data: NewInvoiceFormValues) {
     const result = await createInvoiceAction({
       clientId: data.clientId,
@@ -103,16 +148,21 @@ export function NewInvoiceDialog({ clients }: NewInvoiceDialogProps) {
         quantity: Number(item.quantity),
         unitPrice: Number(item.unitPrice),
         sortOrder: idx,
+        tripId: item.tripId || undefined,
+        notes: item.notes || undefined,
       })),
     })
 
     if (result.success) {
       setOpen(false)
       form.reset()
+      setAvailableTrips([])
     } else {
       form.setError("root", { message: result.error })
     }
   }
+
+  const showTripButton = availableTrips.length > 0 || tripsLoading
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -134,7 +184,7 @@ export function NewInvoiceDialog({ clients }: NewInvoiceDialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Client</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={handleClientChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select client…" />
@@ -228,78 +278,165 @@ export function NewInvoiceDialog({ clients }: NewInvoiceDialogProps) {
             {/* Line Items */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-medium text-slate-700">Line Items</p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => append({ description: "", quantity: 1, unitPrice: 0 })}
-                  className="h-7 text-xs"
-                >
-                  <Plus className="h-3 w-3 mr-1" />
-                  Add Item
-                </Button>
+                <p className="text-sm font-medium text-foreground">Line Items</p>
+                <div className="flex items-center gap-2">
+                  {showTripButton && (
+                    <div className="relative" ref={popoverRef}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs"
+                        disabled={tripsLoading}
+                        onClick={() => setTripPopoverOpen(v => !v)}
+                      >
+                        {tripsLoading ? (
+                          <>
+                            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                            Loading trips…
+                          </>
+                        ) : (
+                          <>
+                            Add Trip
+                            <ChevronDown className="h-3 w-3 ml-1" />
+                          </>
+                        )}
+                      </Button>
+
+                      {tripPopoverOpen && !tripsLoading && (
+                        <div className="absolute right-0 top-full mt-1 z-50 w-80 rounded-md border border-border bg-popover shadow-md">
+                          <div className="max-h-64 overflow-y-auto py-1">
+                            {availableTrips.length === 0 ? (
+                              <p className="text-xs text-muted-foreground px-3 py-2">No unbilled trips found.</p>
+                            ) : (
+                              availableTrips.map((trip) => {
+                                const isAdded = addedTripIds.has(trip.id)
+                                return (
+                                  <div
+                                    key={trip.id}
+                                    className={`py-2 px-3 rounded-sm ${
+                                      isAdded
+                                        ? "opacity-40 cursor-not-allowed"
+                                        : "cursor-pointer hover:bg-muted/60"
+                                    }`}
+                                    onClick={() => {
+                                      if (isAdded) return
+                                      append({
+                                        description: `${trip.pickup_address} → ${trip.dropoff_address}`,
+                                        quantity: 1,
+                                        unitPrice: 0,
+                                        tripId: trip.id,
+                                        notes: "",
+                                      })
+                                      setTripPopoverOpen(false)
+                                    }}
+                                  >
+                                    <p className="text-sm font-medium text-foreground">
+                                      {truncate(trip.pickup_address, 40)} → {truncate(trip.dropoff_address, 40)}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                      {formatTripDate(trip.completed_at)}
+                                    </p>
+                                  </div>
+                                )
+                              })
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => append({ description: "", quantity: 1, unitPrice: 0, tripId: undefined, notes: "" })}
+                    className="h-7 text-xs"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    Add Item
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-2">
                 {fields.map((field, idx) => (
-                  <div key={field.id} className="flex gap-2 items-start">
-                    <div className="flex-1">
+                  <div key={field.id} className="rounded-sm border border-border/60 bg-muted/20 p-2">
+                    <div className="flex gap-2 items-start">
+                      <div className="flex-1">
+                        <FormField
+                          control={form.control}
+                          name={`lineItems.${idx}.description`}
+                          render={({ field: f }) => (
+                            <FormItem>
+                              {idx === 0 && <FormLabel className="text-xs text-muted-foreground">Description</FormLabel>}
+                              <FormControl>
+                                <Input placeholder="Service description" className="text-sm" {...f} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="w-20">
+                        <FormField
+                          control={form.control}
+                          name={`lineItems.${idx}.quantity`}
+                          render={({ field: f }) => (
+                            <FormItem>
+                              {idx === 0 && <FormLabel className="text-xs text-muted-foreground">Qty</FormLabel>}
+                              <FormControl>
+                                <Input type="number" step="1" min="1" className="text-sm" {...f} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="w-28">
+                        <FormField
+                          control={form.control}
+                          name={`lineItems.${idx}.unitPrice`}
+                          render={({ field: f }) => (
+                            <FormItem>
+                              {idx === 0 && <FormLabel className="text-xs text-muted-foreground">Unit Price</FormLabel>}
+                              <FormControl>
+                                <Input type="number" step="0.01" min="0" placeholder="0.00" className="text-sm" {...f} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className={idx === 0 ? "pt-6" : "pt-0"}>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-9 w-9 p-0 text-muted-foreground hover:text-red-500"
+                          onClick={() => remove(idx)}
+                          disabled={fields.length === 1}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-1.5">
                       <FormField
                         control={form.control}
-                        name={`lineItems.${idx}.description`}
+                        name={`lineItems.${idx}.notes`}
                         render={({ field: f }) => (
                           <FormItem>
-                            {idx === 0 && <FormLabel className="text-xs text-slate-500">Description</FormLabel>}
                             <FormControl>
-                              <Input placeholder="Service description" className="text-sm" {...f} />
+                              <Input
+                                placeholder="Optional note…"
+                                className="h-7 text-xs text-muted-foreground"
+                                {...f}
+                              />
                             </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
-                    </div>
-                    <div className="w-20">
-                      <FormField
-                        control={form.control}
-                        name={`lineItems.${idx}.quantity`}
-                        render={({ field: f }) => (
-                          <FormItem>
-                            {idx === 0 && <FormLabel className="text-xs text-slate-500">Qty</FormLabel>}
-                            <FormControl>
-                              <Input type="number" step="1" min="1" className="text-sm" {...f} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="w-28">
-                      <FormField
-                        control={form.control}
-                        name={`lineItems.${idx}.unitPrice`}
-                        render={({ field: f }) => (
-                          <FormItem>
-                            {idx === 0 && <FormLabel className="text-xs text-slate-500">Unit Price</FormLabel>}
-                            <FormControl>
-                              <Input type="number" step="0.01" min="0" placeholder="0.00" className="text-sm" {...f} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className={idx === 0 ? "pt-6" : "pt-0"}>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-9 w-9 p-0 text-slate-400 hover:text-red-500"
-                        onClick={() => remove(idx)}
-                        disabled={fields.length === 1}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 ))}
@@ -317,26 +454,26 @@ export function NewInvoiceDialog({ clients }: NewInvoiceDialogProps) {
             </div>
 
             {/* Totals Summary */}
-            <div className="rounded-sm border border-slate-200 bg-slate-50 p-3 space-y-1.5 text-sm">
-              <div className="flex justify-between text-slate-600">
+            <div className="rounded-sm border border-border bg-muted/30 p-3 space-y-1.5 text-sm">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
                 <span className="tabular-nums">
                   ₱{subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Discount</span>
                 <span className="tabular-nums text-red-600">
                   −₱{discount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Tax</span>
                 <span className="tabular-nums">
                   ₱{tax.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
-              <div className="flex justify-between font-semibold text-slate-900 border-t border-slate-200 pt-1.5">
+              <div className="flex justify-between font-semibold text-foreground border-t border-border pt-1.5">
                 <span>Grand Total</span>
                 <span className="tabular-nums">
                   ₱{grandTotal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

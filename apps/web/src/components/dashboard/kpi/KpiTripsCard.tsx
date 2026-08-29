@@ -10,14 +10,14 @@ interface KpiTripsCardProps {
 
 export function KpiTripsCard({ activeCount, monthlyData }: KpiTripsCardProps) {
   return (
-    <div className="bg-white border border-slate-200 border-l-[3px] border-l-indigo-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
+    <div className="bg-card border border-border border-l-[3px] border-l-indigo-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
       <div className="space-y-1">
         <div className="flex items-center gap-1.5">
-          <Truck className="h-3.5 w-3.5 text-slate-400" />
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Active Trips</p>
+          <Truck className="h-3.5 w-3.5 text-muted-foreground" />
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Active Trips</p>
         </div>
-        <p className="text-3xl font-semibold text-slate-900 tabular-nums">{activeCount}</p>
-        <p className="text-xs text-slate-400">trips in progress</p>
+        <p className="text-3xl font-semibold text-foreground tabular-nums">{activeCount}</p>
+        <p className="text-xs text-muted-foreground">trips in progress</p>
       </div>
 
       <div className="w-24 h-12 shrink-0">

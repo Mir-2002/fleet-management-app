@@ -187,7 +187,7 @@ export function NewExpenseDialog({ trips, trucks }: NewExpenseDialogProps) {
                     <FormLabel>Amount (₱)</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">₱</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">₱</span>
                         <Input
                           type="number"
                           step="0.01"

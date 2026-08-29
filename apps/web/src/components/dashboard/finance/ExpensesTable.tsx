@@ -41,7 +41,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   MAINTENANCE:        "bg-orange-50 text-orange-700 border-orange-200",
   LOADING_UNLOADING:  "bg-teal-50 text-teal-700 border-teal-200",
   ACCOMMODATION:      "bg-indigo-50 text-indigo-700 border-indigo-200",
-  MISCELLANEOUS:      "bg-slate-100 text-slate-700 border-slate-200",
+  MISCELLANEOUS:      "bg-muted text-muted-foreground border-border",
 }
 
 function StatusBadge({ status }: { status: string }) {

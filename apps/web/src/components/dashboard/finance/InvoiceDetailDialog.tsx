@@ -44,16 +44,18 @@ type LineItem = {
   unit_price: number
   subtotal: number
   sort_order: number
+  trip_id: string | null
+  notes: string | null
   created_at: string
 }
 
 const STATUS_STYLES: Record<string, { dot: string; badge: string; label: string }> = {
-  DRAFT:     { dot: "bg-slate-400",  badge: "bg-slate-100 text-slate-600 border-slate-200",   label: "Draft" },
-  SENT:      { dot: "bg-indigo-500", badge: "bg-indigo-50 text-indigo-700 border-indigo-200", label: "Sent" },
-  PAID:      { dot: "bg-green-500",  badge: "bg-green-50 text-green-700 border-green-200",    label: "Paid" },
-  OVERDUE:   { dot: "bg-red-500",    badge: "bg-red-50 text-red-700 border-red-200",          label: "Overdue" },
-  CANCELLED: { dot: "bg-slate-400",  badge: "bg-slate-100 text-slate-600 border-slate-200",   label: "Cancelled" },
-  VOID:      { dot: "bg-slate-400",  badge: "bg-slate-100 text-slate-600 border-slate-200",   label: "Void" },
+  DRAFT:     { dot: "bg-muted-foreground",  badge: "bg-muted text-muted-foreground border-border",   label: "Draft" },
+  SENT:      { dot: "bg-indigo-500",        badge: "bg-indigo-50 text-indigo-700 border-indigo-200", label: "Sent" },
+  PAID:      { dot: "bg-green-500",         badge: "bg-green-50 text-green-700 border-green-200",    label: "Paid" },
+  OVERDUE:   { dot: "bg-red-500",           badge: "bg-red-50 text-red-700 border-red-200",          label: "Overdue" },
+  CANCELLED: { dot: "bg-muted-foreground",  badge: "bg-muted text-muted-foreground border-border",   label: "Cancelled" },
+  VOID:      { dot: "bg-muted-foreground",  badge: "bg-muted text-muted-foreground border-border",   label: "Void" },
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -192,30 +194,30 @@ export function InvoiceDetailDialog({ row, open, onOpenChange }: InvoiceDetailDi
           {/* Info grid */}
           <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Client</p>
-              <p className="text-slate-900 font-medium">{row.profiles?.full_name ?? "—"}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Client</p>
+              <p className="text-foreground font-medium">{row.profiles?.full_name ?? "—"}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Issue Date</p>
-              <p className="text-slate-700">{row.issue_date ? formatDate(row.issue_date) : "—"}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Issue Date</p>
+              <p className="text-foreground">{row.issue_date ? formatDate(row.issue_date) : "—"}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Due Date</p>
-              <p className="text-slate-700">{row.due_date ? formatDate(row.due_date) : "—"}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Due Date</p>
+              <p className="text-foreground">{row.due_date ? formatDate(row.due_date) : "—"}</p>
             </div>
             {row.status === "PAID" && (
               <div>
-                <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Payment Method</p>
-                <p className="text-slate-700">{row.payment_method ?? "—"}</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Payment Method</p>
+                <p className="text-foreground">{row.payment_method ?? "—"}</p>
               </div>
             )}
           </div>
 
           {/* Line items */}
           <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-2">Line Items</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Line Items</p>
             {loadingItems ? (
-              <p className="text-sm text-slate-400">Loading…</p>
+              <p className="text-sm text-muted-foreground">Loading…</p>
             ) : (
               <div className="rounded-sm border border-border overflow-hidden">
                 <Table>
@@ -230,7 +232,12 @@ export function InvoiceDetailDialog({ row, open, onOpenChange }: InvoiceDetailDi
                   <TableBody>
                     {lineItems.map((li) => (
                       <TableRow key={li.id}>
-                        <TableCell className="px-3 py-2">{li.description}</TableCell>
+                        <TableCell className="px-3 py-2">
+                          <span className="block">{li.description}</span>
+                          {li.notes && (
+                            <span className="block text-xs text-muted-foreground mt-0.5">{li.notes}</span>
+                          )}
+                        </TableCell>
                         <TableCell className="px-3 py-2 text-center text-muted-foreground">{li.quantity}</TableCell>
                         <TableCell className="px-3 py-2 text-right tabular-nums text-muted-foreground">{formatPHP(li.unit_price)}</TableCell>
                         <TableCell className="px-3 py-2 text-right tabular-nums font-medium">{formatPHP(li.subtotal ?? li.quantity * li.unit_price)}</TableCell>
@@ -261,7 +268,7 @@ export function InvoiceDetailDialog({ row, open, onOpenChange }: InvoiceDetailDi
               <span>Tax</span>
               <span className="tabular-nums">{formatPHP(row.tax_amount ?? 0)}</span>
             </div>
-            <div className="flex justify-between font-semibold text-slate-900 border-t border-border pt-1.5">
+            <div className="flex justify-between font-semibold text-foreground border-t border-border pt-1.5">
               <span>Grand Total</span>
               <span className="tabular-nums">{formatPHP(row.grand_total ?? 0)}</span>
             </div>
@@ -269,7 +276,7 @@ export function InvoiceDetailDialog({ row, open, onOpenChange }: InvoiceDetailDi
               <span>Amount Paid</span>
               <span className="tabular-nums">{formatPHP(row.amount_paid ?? 0)}</span>
             </div>
-            <div className="flex justify-between font-semibold text-slate-900 border-t border-border pt-1.5">
+            <div className="flex justify-between font-semibold text-foreground border-t border-border pt-1.5">
               <span>Balance Due</span>
               <span className="tabular-nums">{formatPHP(row.balance_due ?? 0)}</span>
             </div>
@@ -277,8 +284,8 @@ export function InvoiceDetailDialog({ row, open, onOpenChange }: InvoiceDetailDi
 
           {/* Mark Paid inline form */}
           {showPaymentForm && (
-            <div className="border border-slate-200 rounded-sm p-4 bg-green-50">
-              <p className="text-sm font-medium text-slate-700 mb-3">Record Payment</p>
+            <div className="border border-border rounded-sm p-4 bg-green-500/10">
+              <p className="text-sm font-medium text-foreground mb-3">Record Payment</p>
               <Form {...paymentForm}>
                 <form onSubmit={paymentForm.handleSubmit(handleMarkPaid)} className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
@@ -369,7 +376,7 @@ export function InvoiceDetailDialog({ row, open, onOpenChange }: InvoiceDetailDi
           )}
 
           {/* Action buttons */}
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-200">
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
             {row.status === "DRAFT" && (
               <Button
                 size="sm"
@@ -393,7 +400,7 @@ export function InvoiceDetailDialog({ row, open, onOpenChange }: InvoiceDetailDi
               <Button
                 size="sm"
                 variant="outline"
-                className="border-slate-300 text-slate-600 hover:text-red-600 hover:border-red-300"
+                className="border-border text-muted-foreground hover:text-red-600 hover:border-red-300"
                 onClick={handleVoid}
                 disabled={actionLoading === "void"}
               >

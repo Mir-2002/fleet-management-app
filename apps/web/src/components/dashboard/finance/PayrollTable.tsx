@@ -16,6 +16,7 @@ export type PayrollPeriodRow = {
     id: string
     profile_id: string
     net_pay: number
+    payment_date?: string | null
     profiles: { role: string; full_name: string } | null
   }[]
 }

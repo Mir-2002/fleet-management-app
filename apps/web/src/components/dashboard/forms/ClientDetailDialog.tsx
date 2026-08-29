@@ -89,16 +89,16 @@ export function ClientDetailDialog({ row, open, onOpenChange }: ClientDetailDial
           ) : (
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <dt className="text-slate-500">Name</dt>
-                <dd className="text-slate-900 font-medium">{row.full_name}</dd>
+                <dt className="text-muted-foreground">Name</dt>
+                <dd className="text-foreground font-medium">{row.full_name}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Contact Number</dt>
-                <dd className="text-slate-900">{row.contact_info ?? "—"}</dd>
+                <dt className="text-muted-foreground">Contact Number</dt>
+                <dd className="text-foreground">{row.contact_info ?? "—"}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Joined</dt>
-                <dd className="text-slate-500">
+                <dt className="text-muted-foreground">Joined</dt>
+                <dd className="text-muted-foreground">
                   {row.created_at ? new Date(row.created_at).toLocaleDateString() : "—"}
                 </dd>
               </div>

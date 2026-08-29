@@ -15,17 +15,17 @@ interface KpiCardProps {
 export function KpiCard({ label, value, subtext, color }: KpiCardProps) {
   return (
     <div
-      className={`bg-white border border-slate-200 border-l-[3px] ${colorMap[color]} rounded-sm p-4 space-y-1`}
+      className={`bg-card border border-border border-l-[3px] ${colorMap[color]} rounded-sm p-4 space-y-1`}
     >
-      <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
         {label}
       </p>
       <div className="flex items-baseline gap-1.5">
-        <span className="text-3xl font-semibold text-slate-900 tabular-nums">
+        <span className="text-3xl font-semibold text-foreground tabular-nums">
           {value}
         </span>
         {subtext && (
-          <span className="text-sm text-slate-400">{subtext}</span>
+          <span className="text-sm text-muted-foreground">{subtext}</span>
         )}
       </div>
     </div>

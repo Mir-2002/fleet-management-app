@@ -27,12 +27,12 @@ export type InvoiceRow = {
 }
 
 const STATUS_STYLES: Record<string, { dot: string; badge: string; label: string }> = {
-  DRAFT:     { dot: "bg-slate-400",  badge: "bg-slate-100 text-slate-600 border-slate-200",   label: "Draft" },
-  SENT:      { dot: "bg-indigo-500", badge: "bg-indigo-50 text-indigo-700 border-indigo-200", label: "Sent" },
-  PAID:      { dot: "bg-green-500",  badge: "bg-green-50 text-green-700 border-green-200",    label: "Paid" },
-  OVERDUE:   { dot: "bg-red-500",    badge: "bg-red-50 text-red-700 border-red-200",          label: "Overdue" },
-  CANCELLED: { dot: "bg-slate-400",  badge: "bg-slate-100 text-slate-600 border-slate-200",   label: "Cancelled" },
-  VOID:      { dot: "bg-slate-400",  badge: "bg-slate-100 text-slate-600 border-slate-200",   label: "Void" },
+  DRAFT:     { dot: "bg-muted-foreground",  badge: "bg-muted text-muted-foreground border-border",   label: "Draft" },
+  SENT:      { dot: "bg-indigo-500",        badge: "bg-indigo-50 text-indigo-700 border-indigo-200", label: "Sent" },
+  PAID:      { dot: "bg-green-500",         badge: "bg-green-50 text-green-700 border-green-200",    label: "Paid" },
+  OVERDUE:   { dot: "bg-red-500",           badge: "bg-red-50 text-red-700 border-red-200",          label: "Overdue" },
+  CANCELLED: { dot: "bg-muted-foreground",  badge: "bg-muted text-muted-foreground border-border",   label: "Cancelled" },
+  VOID:      { dot: "bg-muted-foreground",  badge: "bg-muted text-muted-foreground border-border",   label: "Void" },
 }
 
 function StatusBadge({ status }: { status: string }) {

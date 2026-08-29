@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/dashboard/ThemeToggle";
 import { signOut } from "@/app/dashboard/actions";
 
 function getInitials(name: string): string {
@@ -25,6 +26,7 @@ export function DashboardHeader({ displayName, email }: DashboardHeaderProps) {
       </span>
 
       <div className="flex items-center gap-3">
+        <ThemeToggle />
         <span className="text-sm text-primary-foreground/80">{displayName || email}</span>
         <div
           className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-foreground/20 text-xs font-medium text-primary-foreground"

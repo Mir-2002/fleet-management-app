@@ -34,7 +34,7 @@ export default async function DashboardLayout({
       <DashboardHeader displayName={displayName} email={user.email ?? ""} />
       <div className="flex flex-1 overflow-hidden">
         <DashboardSidebar pendingCount={pendingCount ?? 0} pendingExpenseCount={pendingExpenseCount ?? 0} />
-        <main className="flex-1 overflow-hidden bg-white">
+        <main className="flex-1 overflow-hidden bg-background">
           {children}
         </main>
       </div>

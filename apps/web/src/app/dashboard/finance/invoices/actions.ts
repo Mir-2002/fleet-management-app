@@ -4,6 +4,59 @@ import { revalidatePath } from "next/cache"
 import { CreateInvoiceFormInput, CreateInvoiceFormSchema } from "@fleetman/shared"
 import { createClient } from "@/lib/supabase/server"
 
+export type ClientTrip = {
+  id: string
+  completed_at: string | null
+  pickup_address: string
+  dropoff_address: string
+}
+
+export async function getClientTripsAction(clientId: string): Promise<ClientTrip[]> {
+  if (!clientId) return []
+
+  const supabase = await createClient()
+
+  const { data: trips, error } = await supabase
+    .from("trips")
+    .select(`
+      id,
+      completed_at,
+      requests!inner(
+        client_id,
+        stops(sequence, address)
+      )
+    `)
+    .eq("requests.client_id", clientId)
+    .eq("status", "COMPLETED")
+
+  if (error || !trips) return []
+
+  const { data: billedRows } = await supabase
+    .from("invoice_line_items")
+    .select("trip_id")
+    .not("trip_id", "is", null)
+
+  const billedSet = new Set((billedRows ?? []).map((r: { trip_id: string }) => r.trip_id))
+
+  return (trips as any[])
+    .filter((t) => !billedSet.has(t.id))
+    .map((t) => {
+      const stops: { sequence: number; address: string }[] = t.requests?.stops ?? []
+      const sorted = [...stops].sort((a, b) => a.sequence - b.sequence)
+      return {
+        id: t.id,
+        completed_at: t.completed_at,
+        pickup_address: sorted[0]?.address ?? "—",
+        dropoff_address: sorted[sorted.length - 1]?.address ?? "—",
+      }
+    })
+    .sort((a, b) => {
+      if (!a.completed_at) return 1
+      if (!b.completed_at) return -1
+      return b.completed_at.localeCompare(a.completed_at)
+    })
+}
+
 export async function createInvoiceAction(data: CreateInvoiceFormInput) {
   const parsed = CreateInvoiceFormSchema.safeParse(data)
   if (!parsed.success) return { success: false as const, error: "Invalid data" }
@@ -46,6 +99,8 @@ export async function createInvoiceAction(data: CreateInvoiceFormInput) {
     quantity: item.quantity,
     unit_price: item.unitPrice,
     sort_order: item.sortOrder ?? idx,
+    trip_id: item.tripId || null,
+    notes: item.notes || null,
   }))
 
   const { error: lineItemError } = await supabase
@@ -107,7 +162,7 @@ export async function getInvoiceLineItemsAction(invoiceId: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("invoice_line_items")
-    .select("id, invoice_id, description, quantity, unit_price, subtotal, sort_order, created_at")
+    .select("id, invoice_id, description, quantity, unit_price, subtotal, sort_order, trip_id, notes, created_at")
     .eq("invoice_id", invoiceId)
     .order("sort_order", { ascending: true })
 
@@ -117,7 +172,7 @@ export async function getInvoiceLineItemsAction(invoiceId: string) {
 
 export async function addLineItemAction(
   invoiceId: string,
-  itemData: { description: string; quantity: number; unitPrice: number; sortOrder?: number }
+  itemData: { description: string; quantity: number; unitPrice: number; sortOrder?: number; tripId?: string; notes?: string }
 ) {
   const supabase = await createClient()
   const { error } = await supabase.from("invoice_line_items").insert({
@@ -126,6 +181,8 @@ export async function addLineItemAction(
     quantity: itemData.quantity,
     unit_price: itemData.unitPrice,
     sort_order: itemData.sortOrder ?? 0,
+    trip_id: itemData.tripId || null,
+    notes: itemData.notes || null,
   })
 
   if (error) return { success: false as const, error: error.message }

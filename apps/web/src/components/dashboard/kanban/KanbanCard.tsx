@@ -13,8 +13,8 @@ import { TripDetailDialog } from "./TripDetailDialog"
 
 const statusStyles: Record<KanbanStatus, { dot: string; badge: string; label: string }> = {
   todo: {
-    dot: "bg-slate-400",
-    badge: "bg-slate-100 text-slate-600 border-slate-200",
+    dot: "bg-muted-foreground",
+    badge: "bg-muted text-muted-foreground border-border",
     label: "To Do",
   },
   in_progress: {
@@ -77,7 +77,7 @@ export function KanbanCard({ card, onStatusChange }: KanbanCardProps) {
   return (
     <>
       <div
-        className={`bg-white border border-border rounded-sm shadow-sm p-4 space-y-3 hover:shadow-md transition-shadow duration-150 cursor-pointer ${urgencyBorder}`}
+        className={`bg-card border border-border rounded-sm shadow-sm p-4 space-y-3 hover:shadow-md transition-shadow duration-150 cursor-pointer ${urgencyBorder}`}
         onClick={() => setDetailOpen(true)}
       >
         <div onClick={(e) => e.stopPropagation()}>
@@ -104,7 +104,7 @@ export function KanbanCard({ card, onStatusChange }: KanbanCardProps) {
                   >
                     <span className={`h-2 w-2 rounded-full ${colStyle.dot}`} />
                     <span>{col.label}</span>
-                    {blocked && <span className="ml-auto text-[10px] text-slate-400">assign first</span>}
+                    {blocked && <span className="ml-auto text-[10px] text-muted-foreground">assign first</span>}
                   </DropdownMenuItem>
                 )
               })}
@@ -113,14 +113,14 @@ export function KanbanCard({ card, onStatusChange }: KanbanCardProps) {
         </div>
 
         <div>
-          <p className="text-sm font-medium text-slate-900 leading-snug">{card.clientName}</p>
-          <p className="text-xs text-slate-500 mt-0.5 truncate">
+          <p className="text-sm font-medium text-foreground leading-snug">{card.clientName}</p>
+          <p className="text-xs text-muted-foreground mt-0.5 truncate">
             {tagSummary || '—'} &middot; {card.truckType}
           </p>
         </div>
 
         <div className="flex items-center gap-1.5">
-          <p className="text-xs text-slate-400">{card.schedule}</p>
+          <p className="text-xs text-muted-foreground">{card.schedule}</p>
           {urgency === 'overdue' && (
             <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-sm bg-red-50 text-red-600 border border-red-200">Overdue</span>
           )}
@@ -130,7 +130,7 @@ export function KanbanCard({ card, onStatusChange }: KanbanCardProps) {
         </div>
 
         {(card.truckPlate || card.driverName || card.helperName) ? (
-          <div className="border-t border-border/50 pt-1.5 text-[11px] text-slate-400 space-y-0.5">
+          <div className="border-t border-border/50 pt-1.5 text-[11px] text-muted-foreground space-y-0.5">
             {card.truckPlate && <p>Truck: {card.truckPlate}</p>}
             {card.driverName && <p>Driver: {card.driverName}</p>}
             {card.helperName && <p>Helper: {card.helperName}</p>}
@@ -142,7 +142,7 @@ export function KanbanCard({ card, onStatusChange }: KanbanCardProps) {
             </span>
           </div>
         ) : (
-          <p className="text-[11px] text-slate-300 border-t border-border/50 pt-1.5">
+          <p className="text-[11px] text-muted-foreground/60 border-t border-border/50 pt-1.5">
             No assignments yet
           </p>
         )}

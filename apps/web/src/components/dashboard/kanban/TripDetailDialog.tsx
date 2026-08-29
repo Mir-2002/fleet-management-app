@@ -97,12 +97,12 @@ export function TripDetailDialog({ card, open, onOpenChange }: TripDetailDialogP
         </DialogHeader>
 
         <div className="space-y-4 pt-1">
-          <section className="rounded-sm border border-slate-200 bg-slate-50 px-4 py-3 space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Request Info</p>
+          <section className="rounded-sm border border-border bg-muted/30 px-4 py-3 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Request Info</p>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-              <span className="text-slate-500">Client</span>
-              <span className="text-slate-900 font-medium">{card.clientName}</span>
-              <span className="text-slate-500">Handling</span>
+              <span className="text-muted-foreground">Client</span>
+              <span className="text-foreground font-medium">{card.clientName}</span>
+              <span className="text-muted-foreground">Handling</span>
               <div className="flex flex-wrap gap-1">
                 {(card.cargoHandlingTags ?? []).map((tag) => (
                   <span
@@ -111,32 +111,32 @@ export function TripDetailDialog({ card, open, onOpenChange }: TripDetailDialogP
                       "rounded-sm border px-1.5 py-0.5 text-[10px] font-medium",
                       tag === 'HAZMAT'
                         ? "border-amber-200 bg-amber-50 text-amber-700"
-                        : "border-slate-200 bg-white text-slate-600",
+                        : "border-border bg-muted/30 text-muted-foreground",
                     ].join(" ")}
                   >
                     {TAG_LABELS[tag] ?? tag}
                   </span>
                 ))}
               </div>
-              <span className="text-slate-500">Truck Type</span>
-              <span className="text-slate-900">{card.truckType}</span>
-              <span className="text-slate-500">Schedule</span>
-              <span className="text-slate-900">{card.schedule}</span>
+              <span className="text-muted-foreground">Truck Type</span>
+              <span className="text-foreground">{card.truckType}</span>
+              <span className="text-muted-foreground">Schedule</span>
+              <span className="text-foreground">{card.schedule}</span>
             </div>
 
             {stops.length > 0 && (
-              <div className="pt-1 border-t border-slate-200 mt-2">
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Route</p>
+              <div className="pt-1 border-t border-border mt-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Route</p>
                 <ol className="space-y-2">
                   {stops.map((stop) => (
                     <li key={stop.sequence} className="flex gap-2.5 text-sm">
-                      <span className={`shrink-0 self-start mt-0.5 rounded-sm border px-1.5 py-0.5 text-[10px] font-medium ${STOP_TYPE_STYLES[stop.stop_type] ?? "border-slate-200 bg-slate-50 text-slate-600"}`}>
+                      <span className={`shrink-0 self-start mt-0.5 rounded-sm border px-1.5 py-0.5 text-[10px] font-medium ${STOP_TYPE_STYLES[stop.stop_type] ?? "border-border bg-muted/30 text-muted-foreground"}`}>
                         {stop.stop_type === 'PICKUP' ? 'Pickup' : 'Drop Off'}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-slate-700">{stop.address}</p>
+                        <p className="text-foreground">{stop.address}</p>
                         {stop.contact_name && (
-                          <p className="text-xs text-slate-400 mt-0.5">
+                          <p className="text-xs text-muted-foreground mt-0.5">
                             {stop.contact_name}{stop.contact_phone ? ` · ${stop.contact_phone}` : ''}
                           </p>
                         )}
@@ -149,13 +149,13 @@ export function TripDetailDialog({ card, open, onOpenChange }: TripDetailDialogP
           </section>
 
           <section className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Assignments</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Assignments</p>
             {isLocked ? (
-              <p className="text-xs text-slate-500 bg-slate-100 border border-slate-200 rounded-sm px-3 py-2">
+              <p className="text-xs text-muted-foreground bg-muted border border-border rounded-sm px-3 py-2">
                 This trip is completed and cannot be reassigned.
               </p>
             ) : (
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 All three must be assigned before moving to In Progress.
               </p>
             )}

@@ -141,10 +141,10 @@ export function NewRequestDialog({ clients }: { clients: Client[] }) {
                             selected && isHazmat
                               ? "border-amber-500 bg-amber-50 text-amber-700"
                               : selected
-                              ? "border-slate-700 bg-slate-700 text-white"
+                              ? "border-foreground bg-foreground text-background"
                               : isHazmat
-                              ? "border-amber-200 bg-white text-amber-600 hover:bg-amber-50"
-                              : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
+                              ? "border-amber-200 bg-background text-amber-600 hover:bg-amber-50"
+                              : "border-border bg-background text-muted-foreground hover:bg-muted/30",
                           ].join(" ")}
                         >
                           {tag.label}
@@ -177,7 +177,7 @@ export function NewRequestDialog({ clients }: { clients: Client[] }) {
                           onChange={(e) => field.onChange(e.target.value === '' ? undefined : e.target.valueAsNumber)}
                           className="pr-9"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">kg</span>
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">kg</span>
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -191,7 +191,7 @@ export function NewRequestDialog({ clients }: { clients: Client[] }) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Measured</FormLabel>
-                    <div className="flex rounded-md border border-slate-200 overflow-hidden">
+                    <div className="flex rounded-md border border-border overflow-hidden">
                       {(['PER_ITEM', 'WHOLE'] as const).map((mode) => (
                         <button
                           key={mode}
@@ -200,8 +200,8 @@ export function NewRequestDialog({ clients }: { clients: Client[] }) {
                           className={[
                             "flex-1 py-2 text-xs font-medium transition-colors",
                             watchedMode === mode
-                              ? "bg-slate-700 text-white"
-                              : "bg-white text-slate-500 hover:bg-slate-50",
+                              ? "bg-foreground text-background"
+                              : "bg-background text-muted-foreground hover:bg-muted/30",
                           ].join(" ")}
                         >
                           {mode === 'PER_ITEM' ? 'Per Item' : 'Whole'}
@@ -217,7 +217,7 @@ export function NewRequestDialog({ clients }: { clients: Client[] }) {
             {/* Dimensions */}
             <div>
               <p className="text-sm font-medium mb-1.5">
-                Dimensions <span className="text-slate-400 font-normal text-xs">(optional)</span>
+                Dimensions <span className="text-muted-foreground font-normal text-xs">(optional)</span>
               </p>
               <div className="grid grid-cols-3 gap-2">
                 {(['cargoLength', 'cargoWidth', 'cargoHeight'] as const).map((name, i) => (
@@ -239,7 +239,7 @@ export function NewRequestDialog({ clients }: { clients: Client[] }) {
                               onChange={(e) => field.onChange(e.target.value === '' ? undefined : e.target.valueAsNumber)}
                               className="pr-9"
                             />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">cm</span>
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">cm</span>
                           </div>
                         </FormControl>
                         {name === 'cargoLength' && <FormMessage />}
@@ -304,7 +304,7 @@ export function NewRequestDialog({ clients }: { clients: Client[] }) {
             <div className="space-y-2">
               <p className="text-sm font-medium">Stops</p>
               {fields.map((field, index) => (
-                <div key={field.id} className="rounded-sm border border-slate-200 p-3 space-y-2">
+                <div key={field.id} className="rounded-sm border border-border p-3 space-y-2">
                   <div className="flex items-center gap-2">
                     <FormField
                       control={form.control}
@@ -330,7 +330,7 @@ export function NewRequestDialog({ clients }: { clients: Client[] }) {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 text-slate-400 hover:text-red-500"
+                      className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500"
                       disabled={fields.length <= 2}
                       onClick={() => remove(index)}
                     >
@@ -427,7 +427,7 @@ export function NewRequestDialog({ clients }: { clients: Client[] }) {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <HelpCircle className="h-3.5 w-3.5 text-slate-400 cursor-help" />
+                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent side="right" className="max-w-xs">
                     Skips the review queue — adds the request directly to the Kanban board as To Do.

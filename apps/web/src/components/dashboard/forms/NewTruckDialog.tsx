@@ -89,7 +89,7 @@ export function NewTruckDialog() {
                 <FormItem>
                   <FormLabel className="flex items-center gap-1.5">
                     Trucking Company
-                    <span className="text-[11px] text-slate-400 font-normal">(optional)</span>
+                    <span className="text-[11px] text-muted-foreground font-normal">(optional)</span>
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="Leave blank if in-house" {...field} />

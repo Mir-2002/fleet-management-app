@@ -82,9 +82,9 @@ export function TruckDetailDialog({ row, open, onOpenChange }: TruckDetailDialog
               <div className="space-y-1.5">
                 <Label className="flex items-center gap-1.5">
                   Plate Number
-                  <span className="text-[11px] text-slate-400 font-normal">(immutable)</span>
+                  <span className="text-[11px] text-muted-foreground font-normal">(immutable)</span>
                 </Label>
-                <Input value={row.plate_number} disabled className="bg-slate-50" />
+                <Input value={row.plate_number} disabled className="bg-muted/30" />
               </div>
               <div className="space-y-1.5">
                 <Label>Truck Type</Label>
@@ -93,7 +93,7 @@ export function TruckDetailDialog({ row, open, onOpenChange }: TruckDetailDialog
               <div className="space-y-1.5">
                 <Label className="flex items-center gap-1.5">
                   Trucking Company
-                  <span className="text-[11px] text-slate-400 font-normal">(optional)</span>
+                  <span className="text-[11px] text-muted-foreground font-normal">(optional)</span>
                 </Label>
                 <Input
                   value={trucking}
@@ -113,27 +113,27 @@ export function TruckDetailDialog({ row, open, onOpenChange }: TruckDetailDialog
           ) : (
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <dt className="text-slate-500">Plate Number</dt>
-                <dd className="text-slate-900 font-medium">{row.plate_number}</dd>
+                <dt className="text-muted-foreground">Plate Number</dt>
+                <dd className="text-foreground font-medium">{row.plate_number}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Type</dt>
-                <dd className="text-slate-900">{row.truck_type}</dd>
+                <dt className="text-muted-foreground">Type</dt>
+                <dd className="text-foreground">{row.truck_type}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Trucking</dt>
-                <dd className="text-slate-900">
+                <dt className="text-muted-foreground">Trucking</dt>
+                <dd className="text-foreground">
                   {row.trucking ? (
                     row.trucking
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[11px] font-medium bg-slate-100 text-slate-600 border-slate-200">
+                    <span className="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[11px] font-medium bg-muted text-muted-foreground border-border">
                       In-house
                     </span>
                   )}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Status</dt>
+                <dt className="text-muted-foreground">Status</dt>
                 <dd>
                   {row.is_on_trip ? (
                     <span className="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[11px] font-medium bg-amber-50 text-amber-700 border-amber-200">
@@ -146,16 +146,16 @@ export function TruckDetailDialog({ row, open, onOpenChange }: TruckDetailDialog
                       Available
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[11px] font-medium bg-slate-100 text-slate-600 border-slate-200">
-                      <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                    <span className="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[11px] font-medium bg-muted text-muted-foreground border-border">
+                      <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
                       Unavailable
                     </span>
                   )}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Added</dt>
-                <dd className="text-slate-500">
+                <dt className="text-muted-foreground">Added</dt>
+                <dd className="text-muted-foreground">
                   {row.created_at ? new Date(row.created_at).toLocaleDateString() : "—"}
                 </dd>
               </div>

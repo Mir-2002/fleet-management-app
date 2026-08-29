@@ -6,7 +6,7 @@ type TripRow = {
   id: string
   status: string
   requests: {
-    cargo_type: string
+    cargo_handling_tags: string[]
     truck_type_requested: string
     scheduled_date: string
     profiles: { full_name: string }[] | { full_name: string } | null
@@ -36,7 +36,7 @@ export default async function HistoryPage() {
     .select(`
       id, status,
       requests!request_id (
-        cargo_type, truck_type_requested, scheduled_date,
+        cargo_handling_tags, truck_type_requested, scheduled_date,
         profiles!client_id (full_name)
       ),
       trucks!truck_id (plate_number),
@@ -59,7 +59,7 @@ export default async function HistoryPage() {
       id: t.id,
       status: t.status,
       clientName,
-      cargoType: req?.cargo_type ?? "—",
+      cargoType: req?.cargo_handling_tags?.join(", ") ?? "—",
       truckType: req?.truck_type_requested ?? "—",
       truckPlate: t.trucks?.plate_number ?? null,
       driverName: t.driver?.full_name ?? null,

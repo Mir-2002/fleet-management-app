@@ -50,14 +50,14 @@ export function InvoiceKpiCards({
   return (
     <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
       {/* Outstanding */}
-      <div className="bg-white border border-slate-200 border-l-[3px] border-l-indigo-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
+      <div className="bg-card border border-border border-l-[3px] border-l-indigo-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
         <div className="space-y-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <FileText className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Outstanding</p>
+            <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Outstanding</p>
           </div>
-          <p className="text-xl font-semibold text-slate-900 tabular-nums truncate">{formatPHP(outstanding)}</p>
-          <p className="text-xs text-slate-400">{sentCount} sent · {overdueCount} overdue</p>
+          <p className="text-xl font-semibold text-foreground tabular-nums truncate">{formatPHP(outstanding)}</p>
+          <p className="text-xs text-muted-foreground">{sentCount} sent · {overdueCount} overdue</p>
         </div>
         <div className="shrink-0">
           <PieChart width={56} height={56}>
@@ -69,38 +69,38 @@ export function InvoiceKpiCards({
       </div>
 
       {/* Overdue */}
-      <div className="bg-white border border-slate-200 border-l-[3px] border-l-red-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
+      <div className="bg-card border border-border border-l-[3px] border-l-red-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
         <div className="space-y-1">
           <div className="flex items-center gap-1.5">
-            <AlertCircle className="h-3.5 w-3.5 text-slate-400" />
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Overdue</p>
+            <AlertCircle className="h-3.5 w-3.5 text-muted-foreground" />
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Overdue</p>
           </div>
-          <p className="text-3xl font-semibold text-slate-900 tabular-nums">{overdueCount === 0 ? "—" : overdueCount}</p>
-          <p className="text-xs text-slate-400">past due date</p>
+          <p className="text-3xl font-semibold text-foreground tabular-nums">{overdueCount === 0 ? "—" : overdueCount}</p>
+          <p className="text-xs text-muted-foreground">past due date</p>
         </div>
       </div>
 
       {/* Paid This Month */}
-      <div className="bg-white border border-slate-200 border-l-[3px] border-l-green-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
+      <div className="bg-card border border-border border-l-[3px] border-l-green-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
         <div className="space-y-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Paid This Month</p>
+            <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Paid This Month</p>
           </div>
-          <p className="text-xl font-semibold text-slate-900 tabular-nums truncate">{formatPHP(paidThisMonth)}</p>
-          <p className="text-xs text-slate-400">collected</p>
+          <p className="text-xl font-semibold text-foreground tabular-nums truncate">{formatPHP(paidThisMonth)}</p>
+          <p className="text-xs text-muted-foreground">collected</p>
         </div>
       </div>
 
       {/* Collection Rate */}
-      <div className="bg-white border border-slate-200 border-l-[3px] border-l-green-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
+      <div className="bg-card border border-border border-l-[3px] border-l-green-500 rounded-sm p-4 flex items-center justify-between min-h-[100px]">
         <div className="space-y-1">
           <div className="flex items-center gap-1.5">
-            <TrendingUp className="h-3.5 w-3.5 text-slate-400" />
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Collection Rate</p>
+            <TrendingUp className="h-3.5 w-3.5 text-muted-foreground" />
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Collection Rate</p>
           </div>
-          <p className="text-3xl font-semibold text-slate-900 tabular-nums">{totalCount === 0 ? "—" : `${collectionRate}%`}</p>
-          <p className="text-xs text-slate-400">{paidCount} / {totalCount} invoices</p>
+          <p className="text-3xl font-semibold text-foreground tabular-nums">{totalCount === 0 ? "—" : `${collectionRate}%`}</p>
+          <p className="text-xs text-muted-foreground">{paidCount} / {totalCount} invoices</p>
         </div>
         <div className="shrink-0">
           <PieChart width={56} height={56}>

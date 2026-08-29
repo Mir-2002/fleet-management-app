@@ -118,33 +118,33 @@ export function ExpenseDetailDialog({ row, open, onOpenChange }: ExpenseDetailDi
         <div className="space-y-4 pt-2">
           <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Amount</p>
-              <p className="text-slate-900 font-semibold text-base">{formatPHP(row.amount)}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Amount</p>
+              <p className="text-foreground font-semibold text-base">{formatPHP(row.amount)}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Date</p>
-              <p className="text-slate-700">{row.expense_date ? formatDate(row.expense_date) : "—"}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Date</p>
+              <p className="text-foreground">{row.expense_date ? formatDate(row.expense_date) : "—"}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Submitted By</p>
-              <p className="text-slate-700">{row.submitted_by_profile?.full_name ?? "—"}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Submitted By</p>
+              <p className="text-foreground">{row.submitted_by_profile?.full_name ?? "—"}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Trip Ref</p>
-              <p className="text-slate-700">{row.trip_id ? row.trip_id.slice(0, 8) + "…" : "—"}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Trip Ref</p>
+              <p className="text-foreground">{row.trip_id ? row.trip_id.slice(0, 8) + "…" : "—"}</p>
             </div>
           </div>
 
           {row.description && (
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Description</p>
-              <p className="text-sm text-slate-700">{row.description}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Description</p>
+              <p className="text-sm text-foreground">{row.description}</p>
             </div>
           )}
 
           {row.receipt_url && (
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Receipt</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Receipt</p>
               <a
                 href={row.receipt_url}
                 target="_blank"
@@ -159,7 +159,7 @@ export function ExpenseDetailDialog({ row, open, onOpenChange }: ExpenseDetailDi
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-200">
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
             {row.status === "PENDING" && (
               <>
                 <Button
@@ -182,7 +182,7 @@ export function ExpenseDetailDialog({ row, open, onOpenChange }: ExpenseDetailDi
                 <Button
                   size="sm"
                   variant="outline"
-                  className="border-slate-200 text-slate-500 hover:text-red-600 hover:border-red-200"
+                  className="border-border text-muted-foreground hover:text-red-600 hover:border-red-200"
                   onClick={handleDelete}
                   disabled={loading !== null}
                 >

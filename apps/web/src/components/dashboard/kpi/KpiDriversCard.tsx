@@ -24,21 +24,21 @@ export function KpiDriversCard({ available, total }: KpiDriversCardProps) {
 
   return (
     <Link href="/dashboard/resources/drivers" className="block group">
-    <div className="bg-white border border-border border-l-[3px] border-l-violet-500 rounded-sm p-4 flex items-center justify-between min-h-[100px] hover:border-primary/30 transition-colors cursor-pointer">
+    <div className="bg-card border border-border border-l-[3px] border-l-violet-500 rounded-sm p-4 flex items-center justify-between min-h-[100px] hover:border-primary/30 transition-colors cursor-pointer">
       <div className="space-y-1">
         <div className="flex items-center gap-1.5">
-          <Users className="h-3.5 w-3.5 text-slate-400" />
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Drivers</p>
+          <Users className="h-3.5 w-3.5 text-muted-foreground" />
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Drivers</p>
         </div>
         <div className="flex items-baseline gap-1">
-          <p className="text-3xl font-semibold text-slate-900 tabular-nums">
+          <p className="text-3xl font-semibold text-foreground tabular-nums">
             {total === 0 ? "—" : available}
           </p>
           {total > 0 && (
-            <span className="text-sm text-slate-400">/ {total}</span>
+            <span className="text-sm text-muted-foreground">/ {total}</span>
           )}
         </div>
-        <p className="text-xs text-slate-400">available</p>
+        <p className="text-xs text-muted-foreground">available</p>
       </div>
 
       <div className="shrink-0">

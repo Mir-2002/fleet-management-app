@@ -30,6 +30,8 @@ export const CreateInvoiceLineItemSchema = z.object({
   quantity: z.number().positive("Quantity must be greater than 0"),
   unitPrice: z.number().min(0, "Unit price cannot be negative"),
   sortOrder: z.number().int().default(0),
+  tripId: z.string().uuid().optional(),
+  notes: z.string().optional(),
 });
 
 export const InvoiceLineItemSchema = CreateInvoiceLineItemSchema.extend({
@@ -37,6 +39,8 @@ export const InvoiceLineItemSchema = CreateInvoiceLineItemSchema.extend({
   invoiceId: z.string().uuid(),
   // subtotal is a GENERATED column (quantity * unitPrice); read-only from DB.
   subtotal: z.number(),
+  tripId: z.string().uuid().nullable().optional(),
+  notes: z.string().nullable().optional(),
   createdAt: z.string().datetime({ offset: true }).optional(),
 });
 

@@ -46,7 +46,7 @@ export function TripHistoryTable({ trips }: { trips: HistoryTrip[] }) {
         </TableHeader>
         <TableBody>
           {filtered.map((trip) => {
-            const style = statusStyles[trip.status] ?? { dot: "bg-slate-400", badge: "bg-slate-100 text-slate-600 border-slate-200", label: trip.status }
+            const style = statusStyles[trip.status] ?? { dot: "bg-muted-foreground", badge: "bg-muted text-muted-foreground border-border", label: trip.status }
             return (
               <TableRow key={trip.id}>
                 <TableCell className="px-4 py-3">

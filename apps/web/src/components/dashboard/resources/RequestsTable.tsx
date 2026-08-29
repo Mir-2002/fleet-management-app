@@ -20,10 +20,10 @@ const statusStyles: Record<string, { dot: string; badge: string; label: string }
   ACCEPTED:   { dot: "bg-indigo-500", badge: "bg-indigo-50 text-indigo-700 border-indigo-200", label: "Accepted" },
   DISPATCHED: { dot: "bg-indigo-500", badge: "bg-indigo-50 text-indigo-700 border-indigo-200", label: "Dispatched" },
   COMPLETED:  { dot: "bg-green-500",  badge: "bg-green-50 text-green-700 border-green-200",   label: "Completed" },
-  CANCELLED:  { dot: "bg-slate-400",  badge: "bg-slate-100 text-slate-600 border-slate-200",  label: "Cancelled" },
+  CANCELLED:  { dot: "bg-muted-foreground",  badge: "bg-muted text-muted-foreground border-border",  label: "Cancelled" },
 }
 
-const defaultStyle = { dot: "bg-slate-400", badge: "bg-slate-100 text-slate-600 border-slate-200", label: "Unknown" }
+const defaultStyle = { dot: "bg-muted-foreground", badge: "bg-muted text-muted-foreground border-border", label: "Unknown" }
 
 const TAG_LABELS: Record<string, string> = {
   DRY_GOODS: 'Dry Goods',
